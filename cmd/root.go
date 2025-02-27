@@ -6,7 +6,10 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	"github.com/svetlyopet/authentik-cli/internal/ak"
+	"github.com/svetlyopet/authentik-cli/internal/config"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/pkg/idp/authentik"
 )
 
 var cfgFile string
@@ -27,7 +30,7 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig)
+	cobra.OnInitialize(initConfig, initAuthentikRepo)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%s)", constants.CfgFilename))
 }
@@ -52,4 +55,20 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+}
+
+func initAuthentikRepo() {
+	authentikUrl := viper.GetString("url")
+	authentikToken := viper.GetString("token")
+
+	if err := viper.ReadInConfig(); err != nil {
+		err := config.Set()
+		cobra.CheckErr(err)
+	}
+
+	if err := viper.ReadInConfig(); err != nil {
+		cobra.CheckErr(err)
+	}
+
+	ak.Repo = authentik.New(authentikUrl, authentikToken)
 }
