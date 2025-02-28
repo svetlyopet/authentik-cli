@@ -70,3 +70,7 @@ type getGroupsResponse struct {
 	Pagination pagination  `json:"pagination"`
 	Results    []groupsObj `json:"results" binding:"required"`
 }
+
+type assignPermissionsRequest struct {
+	Permissions []string `json:"permissions" binding:"required"`
+}

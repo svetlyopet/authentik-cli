@@ -11,7 +11,10 @@ import (
 	"github.com/svetlyopet/authentik-cli/pkg/idp"
 )
 
-const rbacRolePath = "%s/api/v3/rbac/roles/"
+const (
+	rbacRolePath                  = "%s/api/v3/rbac/roles/"
+	rbacRolePermissionsAssignPath = "%s/api/v3/rbac/permissions/assigned_by_roles/%s/assign/"
+)
 
 func (a *authentik) CreateRole(name string) (*idp.Role, error) {
 	createRoleRequest := createRoleRequest{
@@ -23,7 +26,9 @@ func (a *authentik) CreateRole(name string) (*idp.Role, error) {
 		return nil, err
 	}
 
-	response, err := a.doRequest(http.MethodPost, fmt.Sprintf(rbacRolePath, a.url), bytes.NewBuffer(createRoleRequestBytes))
+	response, err := a.doRequest(http.MethodPost,
+		fmt.Sprintf(rbacRolePath, a.url),
+		bytes.NewBuffer(createRoleRequestBytes))
 	if err != nil {
 		return nil, err
 	}
@@ -73,4 +78,38 @@ func (a *authentik) GetRoleByName(name string) (*idp.Role, error) {
 	}
 
 	return mapToGetRoleByNameResponse(&getRolesResp), nil
+}
+
+func (a *authentik) AssignTenantAdminPermissionsToRole(rolePK string) error {
+	assignPermissionsRequest := assignPermissionsRequest{
+		Permissions: []string{
+			AccessAdminInterfacePerm,
+			ViewSystemInfoPerm,
+			ViewBrandPerm,
+			ViewOutpostPerm,
+			ViewApplicationPerm,
+			ViewProviderPerm,
+			ViewEventPerm,
+		},
+	}
+
+	assignPermissionsRequestBytes, err := json.Marshal(assignPermissionsRequest)
+	if err != nil {
+		return err
+	}
+
+	response, err := a.doRequest(http.MethodPost,
+		fmt.Sprintf(rbacRolePermissionsAssignPath, a.url, rolePK),
+		bytes.NewBuffer(assignPermissionsRequestBytes))
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		errBody, _ := io.ReadAll(response.Body)
+		return fmt.Errorf("assign permissions to role: %s", string(errBody))
+	}
+
+	return nil
 }

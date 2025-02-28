@@ -27,7 +27,9 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes map[stri
 		return nil, err
 	}
 
-	response, err := a.doRequest(http.MethodPost, fmt.Sprintf(coreGroupPath, a.url), bytes.NewBuffer(createGroupRequestBytes))
+	response, err := a.doRequest(http.MethodPost,
+		fmt.Sprintf(coreGroupPath, a.url),
+		bytes.NewBuffer(createGroupRequestBytes))
 	if err != nil {
 		return nil, err
 	}

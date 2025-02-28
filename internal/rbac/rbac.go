@@ -13,6 +13,10 @@ func CreateRole(name string) (role *idp.Role, err error) {
 		return nil, err
 	}
 
+	if err := ak.Repo.AssignTenantAdminPermissionsToRole(role.PK); err != nil {
+		return nil, err
+	}
+
 	fmt.Printf("role/%s created\n", name)
 
 	return role, nil

@@ -34,7 +34,7 @@ func Create(name string) (err error) {
 			return err
 		}
 	} else {
-		fmt.Printf("group/%s unchaged\n", groupName)
+		fmt.Printf("group/%s unchanged\n", groupName)
 	}
 
 	return nil
