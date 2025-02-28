@@ -1,9 +1,25 @@
 package tenant
 
-import "github.com/svetlyopet/authentik-cli/internal/rbac"
+import (
+	"fmt"
+
+	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/internal/core"
+	"github.com/svetlyopet/authentik-cli/internal/rbac"
+)
 
 func Create(name string) error {
-	_, err := rbac.CreateRole(name)
+	attributes := map[string]string{}
+	attributes["tenant"] = name
+
+	roleName := fmt.Sprintf(constants.TenantAdminRbacRoleNamePattern, name)
+	role, err := rbac.CreateRole(roleName)
+	if err != nil {
+		return err
+	}
+
+	groupName := fmt.Sprintf(constants.TenantAdminGroupNamePattern, name)
+	_, err = core.CreateGroup(groupName, []string{role.PK}, attributes)
 	if err != nil {
 		return err
 	}

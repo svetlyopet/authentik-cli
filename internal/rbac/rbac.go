@@ -4,18 +4,16 @@ import (
 	"fmt"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
-	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/pkg/idp"
 )
 
-func CreateRole(tenantName string) (rolePK string, err error) {
-	roleName := fmt.Sprintf(constants.TenantAdminRbacRoleNamePattern, tenantName)
-
-	role, err := ak.Repo.CreateRole(roleName)
+func CreateRole(name string) (role *idp.Role, err error) {
+	role, err = ak.Repo.CreateRole(name)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	fmt.Printf("created role %s\n", roleName)
+	fmt.Printf("created role %s\n", name)
 
-	return role.PK, nil
+	return role, nil
 }

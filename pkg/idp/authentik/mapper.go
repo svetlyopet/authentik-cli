@@ -8,3 +8,10 @@ func mapToCreateOrUpdateRoleResponse(role *createRoleResponse) *idp.Role {
 		Name: role.Name,
 	}
 }
+
+func mapToCreateOrUpdateGroupResponse(group *createGroupResponse) *idp.Group {
+	return &idp.Group{
+		PK:   group.PK,
+		Name: group.Name,
+	}
+}
