@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 
 	"github.com/svetlyopet/authentik-cli/pkg/idp"
 )
@@ -44,4 +45,36 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes map[stri
 	}
 
 	return mapToCreateOrUpdateGroupResponse(&createGroupResp), nil
+}
+
+func (a *authentik) GetGroupByName(name string) (*idp.Group, error) {
+	param := url.Values{}
+	param.Add("name", name)
+
+	response, err := a.doRequestWithQuery(http.MethodGet, fmt.Sprintf(coreGroupPath, a.url), nil, &param)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, fmt.Errorf("get group by name: %s", string(errBody))
+	}
+
+	var getGroupsResp getGroupsResponse
+	err = json.NewDecoder(response.Body).Decode(&getGroupsResp)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(getGroupsResp.Results) == 0 {
+		return nil, fmt.Errorf("get group by name: group not found")
+	}
+
+	if len(getGroupsResp.Results) > 1 {
+		return nil, fmt.Errorf("get group by name: found more than one group with the search query")
+	}
+
+	return mapToGetGroupByNameResponse(&getGroupsResp), nil
 }

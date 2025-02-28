@@ -13,7 +13,16 @@ func CreateRole(name string) (role *idp.Role, err error) {
 		return nil, err
 	}
 
-	fmt.Printf("created role %s\n", name)
+	fmt.Printf("role/%s created\n", name)
+
+	return role, nil
+}
+
+func GetRoleByName(name string) (role *idp.Role, err error) {
+	role, err = ak.Repo.GetRoleByName(name)
+	if err != nil {
+		return nil, err
+	}
 
 	return role, nil
 }

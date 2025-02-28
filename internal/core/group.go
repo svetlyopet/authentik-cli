@@ -13,7 +13,16 @@ func CreateGroup(name string, roles []string, attributes map[string]string) (*id
 		return nil, err
 	}
 
-	fmt.Printf("created group %s\n", name)
+	fmt.Printf("group/%s created\n", name)
+
+	return group, nil
+}
+
+func GetGroupByName(name string) (group *idp.Group, err error) {
+	group, err = ak.Repo.GetGroupByName(name)
+	if err != nil {
+		return nil, err
+	}
 
 	return group, nil
 }

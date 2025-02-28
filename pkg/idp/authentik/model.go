@@ -10,25 +10,7 @@ type pagination struct {
 	EndIndex   int `json:"end_intex"`
 }
 
-type createRoleRequest struct {
-	Name string `json:"name" binding:"required"`
-}
-
-type createRoleResponse struct {
-	PK   string `json:"pk" binding:"required"`
-	Name string `json:"name" binding:"required"`
-}
-
-type createGroupRequest struct {
-	Name        string      `json:"name" binding:"required"`
-	IsSuperuser bool        `json:"is_superuser"`
-	Parent      string      `json:"parent"`
-	Users       []int       `json:"users"`
-	Attributes  interface{} `json:"attributes"`
-	Roles       []string    `json:"roles"`
-}
-
-type createGroupResponse struct {
+type groupsObj struct {
 	PK          string      `json:"pk" binding:"required"`
 	NumPK       int         `json:"num_pk" binding:"required"`
 	Name        string      `json:"name" binding:"required"`
@@ -56,4 +38,35 @@ type usersObj struct {
 type rolesObj struct {
 	PK   string `json:"pk" binding:"required"`
 	Name string `json:"name" binding:"required"`
+}
+
+type createRoleRequest struct {
+	Name string `json:"name" binding:"required"`
+}
+
+type createRoleResponse struct {
+	rolesObj
+}
+
+type getRolesResponse struct {
+	Pagination pagination `json:"pagination"`
+	Results    []rolesObj `json:"results" binding:"required"`
+}
+
+type createGroupRequest struct {
+	Name        string      `json:"name" binding:"required"`
+	IsSuperuser bool        `json:"is_superuser"`
+	Parent      string      `json:"parent"`
+	Users       []int       `json:"users"`
+	Attributes  interface{} `json:"attributes"`
+	Roles       []string    `json:"roles"`
+}
+
+type createGroupResponse struct {
+	groupsObj
+}
+
+type getGroupsResponse struct {
+	Pagination pagination  `json:"pagination"`
+	Results    []groupsObj `json:"results" binding:"required"`
 }
