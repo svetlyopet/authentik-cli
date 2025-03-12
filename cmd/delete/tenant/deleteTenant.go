@@ -1,11 +1,11 @@
-package cmd
+package tenant
 
 import (
 	"github.com/spf13/cobra"
 	"github.com/svetlyopet/authentik-cli/internal/tenant"
 )
 
-var deleteTenantCmd = &cobra.Command{
+var DeleteTenantCmd = &cobra.Command{
 	Use:   "tenant",
 	Short: "Delete a tenant",
 	Long: `Tenants are not native objects to Authentik,
@@ -21,8 +21,4 @@ Examples:
 		err := tenant.Delete(tenantName)
 		cobra.CheckErr(err)
 	},
-}
-
-func init() {
-	deleteCmd.AddCommand(deleteTenantCmd)
 }

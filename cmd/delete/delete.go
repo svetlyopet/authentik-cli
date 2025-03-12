@@ -1,13 +1,11 @@
-/*
-Copyright © 2025 NAME HERE <EMAIL ADDRESS>
-*/
 package cmd
 
 import (
 	"github.com/spf13/cobra"
+	t "github.com/svetlyopet/authentik-cli/cmd/delete/tenant"
 )
 
-var deleteCmd = &cobra.Command{
+var DeleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "Deletes a resource from stdin",
 	Long: `Deletes resources in Authentik which are native,
@@ -22,6 +20,10 @@ Examples:
 	},
 }
 
+func addSubcommands() {
+	DeleteCmd.AddCommand(t.DeleteTenantCmd)
+}
+
 func init() {
-	rootCmd.AddCommand(deleteCmd)
+	addSubcommands()
 }

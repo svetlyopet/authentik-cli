@@ -1,11 +1,11 @@
-package cmd
+package tenant
 
 import (
 	"github.com/spf13/cobra"
 	"github.com/svetlyopet/authentik-cli/internal/tenant"
 )
 
-var createTenantCmd = &cobra.Command{
+var CreateTenantCmd = &cobra.Command{
 	Use:   "tenant",
 	Short: "Create a tenant",
 	Long: `Tenants are not native objects to Authentik,
@@ -21,8 +21,4 @@ Examples:
 		err := tenant.Create(tenantName)
 		cobra.CheckErr(err)
 	},
-}
-
-func init() {
-	createCmd.AddCommand(createTenantCmd)
 }

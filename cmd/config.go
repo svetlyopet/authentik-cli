@@ -16,7 +16,3 @@ environment variable`,
 		cobra.CheckErr(err)
 	},
 }
-
-func init() {
-	rootCmd.AddCommand(configCmd)
-}

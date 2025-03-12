@@ -1,10 +1,11 @@
-package cmd
+package create
 
 import (
 	"github.com/spf13/cobra"
+	t "github.com/svetlyopet/authentik-cli/cmd/create/tenant"
 )
 
-var createCmd = &cobra.Command{
+var CreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a resource from stdin",
 	Long: `Creates resources in Authentik which are native,
@@ -19,6 +20,10 @@ Examples:
 	},
 }
 
+func addSubcommands() {
+	CreateCmd.AddCommand(t.CreateTenantCmd)
+}
+
 func init() {
-	rootCmd.AddCommand(createCmd)
+	addSubcommands()
 }

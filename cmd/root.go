@@ -6,8 +6,9 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
+	c "github.com/svetlyopet/authentik-cli/cmd/create"
+	d "github.com/svetlyopet/authentik-cli/cmd/delete"
 	"github.com/svetlyopet/authentik-cli/internal/ak"
-	"github.com/svetlyopet/authentik-cli/internal/config"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/pkg/idp/authentik"
 )
@@ -30,9 +31,16 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(initConfig, initAuthentikRepo)
+	cobra.OnInitialize(initConfig)
+	addSubcommands()
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%s)", constants.CfgFilename))
+}
+
+func addSubcommands() {
+	rootCmd.AddCommand(configCmd)
+	rootCmd.AddCommand(c.CreateCmd)
+	rootCmd.AddCommand(d.DeleteCmd)
 }
 
 func initConfig() {
@@ -52,23 +60,13 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	if err := viper.ReadInConfig(); err != nil {
+		fmt.Println("No config file found. Run the config command to set a target.")
+		os.Exit(1)
 	}
-}
 
-func initAuthentikRepo() {
 	authentikUrl := viper.GetString("url")
 	authentikToken := viper.GetString("token")
-
-	if err := viper.ReadInConfig(); err != nil {
-		err := config.Set()
-		cobra.CheckErr(err)
-	}
-
-	if err := viper.ReadInConfig(); err != nil {
-		cobra.CheckErr(err)
-	}
 
 	ak.Repo = authentik.New(authentikUrl, authentikToken)
 }

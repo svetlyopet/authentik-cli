@@ -5,6 +5,7 @@ CI_TEST_DIR=$(pwd)/ci/integration_tests
 PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
 AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')
 AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')
+AUTHENTIK_BOOTSTRAP_TOKEN=$(openssl rand -base64 36 | tr -d '\n')
 
 help() {
   echo "Usage: $0 [command]"
@@ -16,6 +17,7 @@ help() {
 generate_env() {
   echo "PG_PASS=$PG_PASS" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_SECRET_KEY=$AUTHENTIK_SECRET_KEY" >> $CI_TEST_DIR/.env
+  echo "AUTHENTIK_BOOTSTRAP_TOKEN=$AUTHENTIK_BOOTSTRAP_TOKEN" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_BOOTSTRAP_PASSWORD=$AUTHENTIK_BOOTSTRAP_PASSWORD" >> $CI_TEST_DIR/.env
   echo "CI_TEST_DIR=$CI_TEST_DIR" >> $CI_TEST_DIR/.env
 }
@@ -25,6 +27,7 @@ compose() {
   echo "login link: http://localhost:9000"
   echo "user: akadmin"
   echo "password: $AUTHENTIK_BOOTSTRAP_PASSWORD"
+  echo "api-token: $AUTHENTIK_BOOTSTRAP_TOKEN"
 }
 
 cleanup() {
