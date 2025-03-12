@@ -26,3 +26,12 @@ go.work.sum
 
 # MacOS file
 .DS_Store
+
+# Integration tests mounted directories
+ci/integration_tests/certs
+ci/integration_tests/custom-templates
+ci/integration_tests/media
+
+# IDE configurations
+.vscode/
+.idea/
