@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/svetlyopet/authentik-cli/pkg/idp"
+	"github.com/svetlyopet/authentik-cli/internal/ak"
 )
 
 type authentik struct {
@@ -17,7 +17,7 @@ type authentik struct {
 	client http.Client
 }
 
-func New(url, token string) idp.AuthentikRepository {
+func New(url, token string) ak.AuthentikRepository {
 	return &authentik{
 		url:   url,
 		token: token,
@@ -27,11 +27,11 @@ func New(url, token string) idp.AuthentikRepository {
 	}
 }
 
-func (a authentik) doRequest(method, url string, body io.Reader) (*http.Response, error) {
+func (a *authentik) doRequest(method, url string, body io.Reader) (*http.Response, error) {
 	return a.doRequestWithQuery(method, url, body, nil)
 }
 
-func (a authentik) doRequestWithQuery(method, url string, body io.Reader, values *url.Values) (*http.Response, error) {
+func (a *authentik) doRequestWithQuery(method, url string, body io.Reader, values *url.Values) (*http.Response, error) {
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err

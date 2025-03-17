@@ -8,12 +8,12 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/svetlyopet/authentik-cli/pkg/idp"
+	"github.com/svetlyopet/authentik-cli/internal/ak"
 )
 
 const coreGroupPath = "%s/api/v3/core/groups/"
 
-func (a *authentik) CreateGroup(name string, roles []string, attributes map[string]string) (*idp.Group, error) {
+func (a *authentik) CreateGroup(name string, roles []string, attributes map[string]string) (*ak.Group, error) {
 	createGroupRequest := createGroupRequest{
 		Name:        name,
 		IsSuperuser: false,
@@ -49,7 +49,7 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes map[stri
 	return mapToCreateOrUpdateGroupResponse(&createGroupResp), nil
 }
 
-func (a *authentik) GetGroupByName(name string) (*idp.Group, error) {
+func (a *authentik) GetGroupByName(name string) (*ak.Group, error) {
 	param := url.Values{}
 	param.Add("name", name)
 

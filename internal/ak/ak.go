@@ -1,5 +1,11 @@
 package ak
 
-import "github.com/svetlyopet/authentik-cli/pkg/idp"
+var Repo AuthentikRepository
 
-var Repo idp.AuthentikRepository
+type AuthentikRepository interface {
+	CreateRole(name string) (*Role, error)
+	GetRoleByName(name string) (*Role, error)
+	AssignTenantAdminPermissionsToRole(rolePK string) error
+	CreateGroup(name string, roles []string, attributes map[string]string) (*Group, error)
+	GetGroupByName(name string) (*Group, error)
+}

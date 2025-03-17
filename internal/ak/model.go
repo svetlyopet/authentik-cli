@@ -1,4 +1,4 @@
-package idp
+package ak
 
 type Role struct {
 	PK   string

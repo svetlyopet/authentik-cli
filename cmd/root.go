@@ -9,8 +9,8 @@ import (
 	c "github.com/svetlyopet/authentik-cli/cmd/create"
 	d "github.com/svetlyopet/authentik-cli/cmd/delete"
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	"github.com/svetlyopet/authentik-cli/internal/ak/authentik"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
-	"github.com/svetlyopet/authentik-cli/pkg/idp/authentik"
 )
 
 var cfgFile string

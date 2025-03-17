@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/svetlyopet/authentik-cli/pkg/idp"
+	"github.com/svetlyopet/authentik-cli/internal/ak"
 )
 
 const (
@@ -16,7 +16,7 @@ const (
 	rbacRolePermissionsAssignPath = "%s/api/v3/rbac/permissions/assigned_by_roles/%s/assign/"
 )
 
-func (a *authentik) CreateRole(name string) (*idp.Role, error) {
+func (a *authentik) CreateRole(name string) (*ak.Role, error) {
 	createRoleRequest := createRoleRequest{
 		Name: name,
 	}
@@ -48,7 +48,7 @@ func (a *authentik) CreateRole(name string) (*idp.Role, error) {
 	return mapToCreateOrUpdateRoleResponse(&createRoleResp), nil
 }
 
-func (a *authentik) GetRoleByName(name string) (*idp.Role, error) {
+func (a *authentik) GetRoleByName(name string) (*ak.Role, error) {
 	param := url.Values{}
 	param.Add("search", name)
 

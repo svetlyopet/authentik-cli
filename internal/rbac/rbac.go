@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
-	"github.com/svetlyopet/authentik-cli/pkg/idp"
 )
 
-func CreateRole(name string) (role *idp.Role, err error) {
+func CreateRole(name string) (role *ak.Role, err error) {
 	role, err = ak.Repo.CreateRole(name)
 	if err != nil {
 		return nil, err
@@ -22,7 +21,7 @@ func CreateRole(name string) (role *idp.Role, err error) {
 	return role, nil
 }
 
-func GetRoleByName(name string) (role *idp.Role, err error) {
+func GetRoleByName(name string) (role *ak.Role, err error) {
 	role, err = ak.Repo.GetRoleByName(name)
 	if err != nil {
 		return nil, err

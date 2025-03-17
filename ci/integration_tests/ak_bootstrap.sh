@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set +eo pipefail
+
 CI_TEST_DIR=$(pwd)/ci/integration_tests
 
 PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
@@ -15,6 +17,10 @@ help() {
 }
 
 generate_env() {
+  if [ -f $CI_TEST_DIR/.env ]; then
+    rm $CI_TEST_DIR/.env
+  fi
+
   echo "PG_PASS=$PG_PASS" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_SECRET_KEY=$AUTHENTIK_SECRET_KEY" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_BOOTSTRAP_TOKEN=$AUTHENTIK_BOOTSTRAP_TOKEN" >> $CI_TEST_DIR/.env

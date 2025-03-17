@@ -3,14 +3,14 @@ package tenant
 import (
 	"fmt"
 
+	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/internal/core"
 	"github.com/svetlyopet/authentik-cli/internal/rbac"
-	"github.com/svetlyopet/authentik-cli/pkg/idp"
 )
 
 func Create(name string) (err error) {
-	role := &idp.Role{}
+	role := &ak.Role{}
 
 	attributes := map[string]string{}
 	attributes["tenant"] = name
