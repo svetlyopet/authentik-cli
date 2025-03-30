@@ -29,3 +29,14 @@ func GetRoleByName(name string) (role *ak.Role, err error) {
 
 	return role, nil
 }
+
+func DeleteRole(name, uuid string) (err error) {
+	err = ak.Repo.DeleteRole(uuid)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("role/%s deleted\n", name)
+
+	return nil
+}

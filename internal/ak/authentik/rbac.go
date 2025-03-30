@@ -9,10 +9,12 @@ import (
 	"net/url"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 )
 
 const (
 	rbacRolePath                  = "%s/api/v3/rbac/roles/"
+	rbacRolePathUpdateDelete      = "%s/api/v3/rbac/roles/%s/"
 	rbacRolePermissionsAssignPath = "%s/api/v3/rbac/permissions/assigned_by_roles/%s/assign/"
 )
 
@@ -36,7 +38,7 @@ func (a *authentik) CreateRole(name string) (*ak.Role, error) {
 
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, fmt.Errorf("create role: %s", string(errBody))
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create role: %s", string(errBody)))
 	}
 
 	var createRoleResp createRoleResponse
@@ -70,11 +72,11 @@ func (a *authentik) GetRoleByName(name string) (*ak.Role, error) {
 	}
 
 	if len(getRolesResp.Results) == 0 {
-		return nil, fmt.Errorf("get role by name: role not found")
+		return nil, customErrors.NewNotExists("get role by name: role not found")
 	}
 
 	if len(getRolesResp.Results) > 1 {
-		return nil, fmt.Errorf("get role by name: found more than one role with the search query")
+		return nil, customErrors.NewUnexpectedResult("get role by name: found more than one role with the search query")
 	}
 
 	return mapToGetRoleByNameResponse(&getRolesResp), nil
@@ -108,7 +110,22 @@ func (a *authentik) AssignTenantAdminPermissionsToRole(rolePK string) error {
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
-		return fmt.Errorf("assign permissions to role: %s", string(errBody))
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("assign permissions to role: %s", string(errBody)))
+	}
+
+	return nil
+}
+
+func (a *authentik) DeleteRole(uuid string) error {
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(rbacRolePathUpdateDelete, a.url, uuid), nil)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusNoContent {
+		errBody, _ := io.ReadAll(response.Body)
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete role: %s", string(errBody)))
 	}
 
 	return nil

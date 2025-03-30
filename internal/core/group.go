@@ -25,3 +25,14 @@ func GetGroupByName(name string) (group *ak.Group, err error) {
 
 	return group, nil
 }
+
+func DeleteGroup(name, uuid string) (err error) {
+	err = ak.Repo.DeleteGroup(uuid)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("group/%s deleted\n", name)
+
+	return nil
+}

@@ -9,9 +9,13 @@ import (
 	"net/url"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 )
 
-const coreGroupPath = "%s/api/v3/core/groups/"
+const (
+	coreGroupPath             = "%s/api/v3/core/groups/"
+	coreGroupPathUpdateDelete = "%s/api/v3/core/groups/%s/"
+)
 
 func (a *authentik) CreateGroup(name string, roles []string, attributes map[string]string) (*ak.Group, error) {
 	createGroupRequest := createGroupRequest{
@@ -37,7 +41,7 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes map[stri
 
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, fmt.Errorf("create group: %s", string(errBody))
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create group: %s", string(errBody)))
 	}
 
 	var createGroupResp createGroupResponse
@@ -71,12 +75,27 @@ func (a *authentik) GetGroupByName(name string) (*ak.Group, error) {
 	}
 
 	if len(getGroupsResp.Results) == 0 {
-		return nil, fmt.Errorf("get group by name: group not found")
+		return nil, customErrors.NewNotExists("get group by name: group not found")
 	}
 
 	if len(getGroupsResp.Results) > 1 {
-		return nil, fmt.Errorf("get group by name: found more than one group with the search query")
+		return nil, customErrors.NewUnexpectedResult("get group by name: found more than one group with the search query")
 	}
 
 	return mapToGetGroupByNameResponse(&getGroupsResp), nil
+}
+
+func (a *authentik) DeleteGroup(uuid string) error {
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreGroupPathUpdateDelete, a.url, uuid), nil)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusNoContent {
+		errBody, _ := io.ReadAll(response.Body)
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete group: %s", string(errBody)))
+	}
+
+	return nil
 }
