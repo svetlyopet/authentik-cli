@@ -3,6 +3,7 @@ package create
 import (
 	"github.com/spf13/cobra"
 	t "github.com/svetlyopet/authentik-cli/cmd/create/tenant"
+	u "github.com/svetlyopet/authentik-cli/cmd/create/user"
 )
 
 var CreateCmd = &cobra.Command{
@@ -22,6 +23,7 @@ Examples:
 
 func addSubcommands() {
 	CreateCmd.AddCommand(t.CreateTenantCmd)
+	CreateCmd.AddCommand(u.CreateUserCmd)
 }
 
 func init() {

@@ -6,7 +6,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 )
 
-func CreateGroup(name string, roles []string, attributes map[string]string) (*ak.Group, error) {
+func CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
 	group, err := ak.Repo.CreateGroup(name, roles, attributes)
 	if err != nil {
 		return nil, err
@@ -33,6 +33,17 @@ func DeleteGroup(name, uuid string) (err error) {
 	}
 
 	fmt.Printf("group/%s deleted\n", name)
+
+	return nil
+}
+
+func AddUserToGroup(userPK int, groupPK, groupName string) (err error) {
+	err = ak.Repo.AddUserToGroup(userPK, groupPK)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("group/%s changed\n", groupName)
 
 	return nil
 }

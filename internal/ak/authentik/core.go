@@ -13,17 +13,21 @@ import (
 )
 
 const (
-	coreGroupPath             = "%s/api/v3/core/groups/"
-	coreGroupPathUpdateDelete = "%s/api/v3/core/groups/%s/"
+	coreUsersPath              = "%s/api/v3/core/users/"
+	coreGroupsPath             = "%s/api/v3/core/groups/"
+	coreGroupsPathUpdateDelete = "%s/api/v3/core/groups/%s/"
+	coreGroupsAddUserPath      = "%s/api/v3/core/groups/%s/add_user/"
 )
 
-func (a *authentik) CreateGroup(name string, roles []string, attributes map[string]string) (*ak.Group, error) {
+func (a *authentik) CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
 	createGroupRequest := createGroupRequest{
 		Name:        name,
 		IsSuperuser: false,
 		Users:       []int{},
-		Attributes:  attributes,
-		Roles:       roles,
+		Attributes: groupAttributes{
+			Tenant: attributes.Tenant,
+		},
+		Roles: roles,
 	}
 
 	createGroupRequestBytes, err := json.Marshal(createGroupRequest)
@@ -32,7 +36,7 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes map[stri
 	}
 
 	response, err := a.doRequest(http.MethodPost,
-		fmt.Sprintf(coreGroupPath, a.url),
+		fmt.Sprintf(coreGroupsPath, a.url),
 		bytes.NewBuffer(createGroupRequestBytes))
 	if err != nil {
 		return nil, err
@@ -57,7 +61,7 @@ func (a *authentik) GetGroupByName(name string) (*ak.Group, error) {
 	param := url.Values{}
 	param.Add("name", name)
 
-	response, err := a.doRequestWithQuery(http.MethodGet, fmt.Sprintf(coreGroupPath, a.url), nil, &param)
+	response, err := a.doRequestWithQuery(http.MethodGet, fmt.Sprintf(coreGroupsPath, a.url), nil, &param)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +90,7 @@ func (a *authentik) GetGroupByName(name string) (*ak.Group, error) {
 }
 
 func (a *authentik) DeleteGroup(uuid string) error {
-	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreGroupPathUpdateDelete, a.url, uuid), nil)
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreGroupsPathUpdateDelete, a.url, uuid), nil)
 	if err != nil {
 		return err
 	}
@@ -95,6 +99,68 @@ func (a *authentik) DeleteGroup(uuid string) error {
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
 		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete group: %s", string(errBody)))
+	}
+
+	return nil
+}
+
+func (a authentik) CreateUser(usr ak.User) (*ak.User, error) {
+	createUserReq := createUserRequest{
+		Username: usr.Username,
+		Name:     usr.Name,
+		Email:    usr.Email,
+		Path:     usr.Path,
+		IsActive: usr.IsActive,
+		Attributes: userAttributes{
+			UserType: usr.Attributes.UserType,
+			Tenant:   usr.Attributes.Tenant,
+		},
+	}
+
+	createUserReqBytes, err := json.Marshal(createUserReq)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := a.doRequest(http.MethodPost, fmt.Sprintf(coreUsersPath, a.url), bytes.NewBuffer(createUserReqBytes))
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusCreated {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("%s", errBody))
+	}
+
+	var userResp createOrUpdateUserResponse
+	err = json.NewDecoder(response.Body).Decode(&userResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapToCreateOrUpdateUserResponse(&userResp), nil
+}
+
+func (a authentik) AddUserToGroup(userPK int, groupUuid string) error {
+	userAddRequest := groupUserAddRequest{
+		PK: fmt.Sprintf("%d", userPK),
+	}
+
+	userAddRequestBytes, err := json.Marshal(userAddRequest)
+	if err != nil {
+		return err
+	}
+
+	response, err := a.doRequest(http.MethodPost, fmt.Sprintf(coreGroupsAddUserPath, a.url, groupUuid), bytes.NewBuffer(userAddRequestBytes))
+	if err != nil {
+		return err
+	}
+
+	defer response.Body.Close()
+	if response.StatusCode != http.StatusNoContent {
+		errBody, _ := io.ReadAll(response.Body)
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("%s", errBody))
 	}
 
 	return nil

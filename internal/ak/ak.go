@@ -7,7 +7,9 @@ type AuthentikRepository interface {
 	GetRoleByName(name string) (*Role, error)
 	DeleteRole(uuid string) error
 	AssignTenantAdminPermissionsToRole(rolePK string) error
-	CreateGroup(name string, roles []string, attributes map[string]string) (*Group, error)
+	CreateGroup(name string, roles []string, attributes GroupAttributes) (*Group, error)
 	GetGroupByName(name string) (*Group, error)
 	DeleteGroup(uuid string) error
+	AddUserToGroup(userPK int, uuid string) error
+	CreateUser(usr User) (*User, error)
 }

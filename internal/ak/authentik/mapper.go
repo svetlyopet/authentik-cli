@@ -41,3 +41,17 @@ func mapToGetGroupByNameResponse(roles *getGroupsResponse) *ak.Group {
 
 	return res
 }
+
+func mapToCreateOrUpdateUserResponse(user *createOrUpdateUserResponse) *ak.User {
+	return &ak.User{
+		PK:       user.PK,
+		Username: user.Username,
+		Name:     user.Name,
+		Email:    user.Email,
+		IsActive: user.IsActive,
+		Attributes: ak.UserAttributes{
+			UserType: user.Attributes.UserType,
+			Tenant:   user.Attributes.Tenant,
+		},
+	}
+}

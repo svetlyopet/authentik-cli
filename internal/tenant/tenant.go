@@ -14,9 +14,6 @@ import (
 func Create(name string) (err error) {
 	role := &ak.Role{}
 
-	attributes := map[string]string{}
-	attributes["tenant"] = name
-
 	roleName := fmt.Sprintf(constants.TenantAdminRbacRoleNamePattern, name)
 
 	if role, err = rbac.GetRoleByName(roleName); err != nil {
@@ -29,9 +26,12 @@ func Create(name string) (err error) {
 	}
 
 	groupName := fmt.Sprintf(constants.TenantAdminGroupNamePattern, name)
+	groupAttributes := ak.GroupAttributes{
+		Tenant: name,
+	}
 
 	if _, err = core.GetGroupByName(groupName); err != nil {
-		_, err = core.CreateGroup(groupName, []string{role.PK}, attributes)
+		_, err = core.CreateGroup(groupName, []string{role.PK}, groupAttributes)
 		if err != nil {
 			return err
 		}
