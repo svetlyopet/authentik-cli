@@ -16,7 +16,6 @@ type Config struct {
 }
 
 var (
-	cfgFile     string
 	cfgFilepath string
 )
 

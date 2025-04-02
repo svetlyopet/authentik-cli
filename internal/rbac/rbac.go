@@ -1,9 +1,9 @@
 package rbac
 
 import (
-	"fmt"
-
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
 
 func CreateRole(name string) (role *ak.Role, err error) {
@@ -16,7 +16,7 @@ func CreateRole(name string) (role *ak.Role, err error) {
 		return nil, err
 	}
 
-	fmt.Printf("role/%s created\n", name)
+	logger.WriteStdio(constants.ObjectTypeRole, constants.ActionCreated, name)
 
 	return role, nil
 }
@@ -36,7 +36,7 @@ func DeleteRole(name, uuid string) (err error) {
 		return err
 	}
 
-	fmt.Printf("role/%s deleted\n", name)
+	logger.WriteStdio(constants.ObjectTypeRole, constants.ActionDeleted, name)
 
 	return nil
 }

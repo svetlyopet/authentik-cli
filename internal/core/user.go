@@ -6,6 +6,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
+	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
 
 func CreateUser(username, name, surname, email, tenant string) (err error) {
@@ -41,7 +42,7 @@ func CreateUser(username, name, surname, email, tenant string) (err error) {
 		return err
 	}
 
-	fmt.Printf("user/%s created\n", username)
+	logger.WriteStdio(constants.ObjectTypeUser, constants.ActionCreated, username)
 
 	if tenant != "" {
 		err = AddUserToGroup(user.PK, tenantGroup.PK, tenantGroup.Name)

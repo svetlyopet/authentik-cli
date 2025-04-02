@@ -16,7 +16,7 @@ func (e NotExists) Error() string {
 func NewNotExists(message string) error {
 	return &NotExists{
 		DefaultError{
-			Code:    404,
+			Code:    100,
 			Message: message,
 		},
 	}
@@ -33,7 +33,7 @@ func (e UnexpectedResult) Error() string {
 func NewUnexpectedResult(message string) error {
 	return &UnexpectedResult{
 		DefaultError{
-			Code:    409,
+			Code:    101,
 			Message: message,
 		},
 	}

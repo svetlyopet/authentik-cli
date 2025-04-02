@@ -8,6 +8,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/internal/core"
 	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
+	"github.com/svetlyopet/authentik-cli/internal/logger"
 	"github.com/svetlyopet/authentik-cli/internal/rbac"
 )
 
@@ -22,7 +23,7 @@ func Create(name string) (err error) {
 			return err
 		}
 	} else {
-		fmt.Printf("role/%s unchanged\n", roleName)
+		logger.WriteStdio(constants.ObjectTypeRole, constants.ActionUnchanged, roleName)
 	}
 
 	groupName := fmt.Sprintf(constants.TenantAdminGroupNamePattern, name)
@@ -36,7 +37,7 @@ func Create(name string) (err error) {
 			return err
 		}
 	} else {
-		fmt.Printf("group/%s unchanged\n", groupName)
+		logger.WriteStdio(constants.ObjectTypeGroup, constants.ActionUnchanged, groupName)
 	}
 
 	return nil

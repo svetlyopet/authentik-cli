@@ -1,9 +1,9 @@
 package core
 
 import (
-	"fmt"
-
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
 
 func CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
@@ -12,7 +12,7 @@ func CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*a
 		return nil, err
 	}
 
-	fmt.Printf("group/%s created\n", name)
+	logger.WriteStdio(constants.ObjectTypeGroup, constants.ActionCreated, name)
 
 	return group, nil
 }
@@ -32,7 +32,7 @@ func DeleteGroup(name, uuid string) (err error) {
 		return err
 	}
 
-	fmt.Printf("group/%s deleted\n", name)
+	logger.WriteStdio(constants.ObjectTypeGroup, constants.ActionDeleted, name)
 
 	return nil
 }
@@ -43,7 +43,7 @@ func AddUserToGroup(userPK int, groupPK, groupName string) (err error) {
 		return err
 	}
 
-	fmt.Printf("group/%s changed\n", groupName)
+	logger.WriteStdio(constants.ObjectTypeGroup, constants.ActionChanged, groupName)
 
 	return nil
 }
