@@ -2,12 +2,15 @@
 
 set +eo pipefail
 
-CI_TEST_DIR=$(pwd)/ci/integration_tests
+: ${AUTHENTIK_TAG:="2025.2.3"}
 
-PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
 AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')
 AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')
 AUTHENTIK_BOOTSTRAP_TOKEN=$(openssl rand -base64 36 | tr -d '\n')
+
+PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
+
+CI_TEST_DIR=$(pwd)/ci/integration_tests
 
 help() {
   echo "Usage: $0 [command]"
@@ -21,10 +24,11 @@ generate_env() {
     rm $CI_TEST_DIR/.env
   fi
 
-  echo "PG_PASS=$PG_PASS" >> $CI_TEST_DIR/.env
+  echo "AUTHENTIK_TAG=$AUTHENTIK_TAG" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_SECRET_KEY=$AUTHENTIK_SECRET_KEY" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_BOOTSTRAP_TOKEN=$AUTHENTIK_BOOTSTRAP_TOKEN" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_BOOTSTRAP_PASSWORD=$AUTHENTIK_BOOTSTRAP_PASSWORD" >> $CI_TEST_DIR/.env
+  echo "PG_PASS=$PG_PASS" >> $CI_TEST_DIR/.env
   echo "CI_TEST_DIR=$CI_TEST_DIR" >> $CI_TEST_DIR/.env
 }
 
@@ -41,7 +45,6 @@ cleanup() {
   rm -f $CI_TEST_DIR/.env 2&>/dev/null
   rm -rf $CI_TEST_DIR/certs $CI_TEST_DIR/custom-templates $CI_TEST_DIR/media 2&>/dev/null
 }
-trap EXIT
 
 main() {
   case "$1" in
