@@ -12,7 +12,7 @@ func CreateRole(name string) (role *ak.Role, err error) {
 		return nil, err
 	}
 
-	if err := ak.Repo.AssignTenantAdminPermissionsToRole(role.PK); err != nil {
+	if err := ak.Repo.AssignViewPermissionsToTenantRole(role.PK); err != nil {
 		return nil, err
 	}
 
