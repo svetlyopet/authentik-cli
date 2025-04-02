@@ -82,12 +82,13 @@ func (a *authentik) GetRoleByName(name string) (*ak.Role, error) {
 	return mapToGetRoleByNameResponse(&getRolesResp), nil
 }
 
-func (a *authentik) AssignTenantAdminPermissionsToRole(rolePK string) error {
-	assignPermissionsRequest := assignPermissionsRequest{
+func (a *authentik) AssignViewPermissionsToTenantRole(rolePK string) error {
+	assignPermissionsReq := assignPermissionsRequest{
 		Permissions: []string{
 			AccessAdminInterfacePerm,
 			ViewSystemInfoPerm,
 			ViewBrandPerm,
+			ViewFlowPerm,
 			ViewOutpostPerm,
 			ViewApplicationPerm,
 			ViewProviderPerm,
@@ -95,7 +96,7 @@ func (a *authentik) AssignTenantAdminPermissionsToRole(rolePK string) error {
 		},
 	}
 
-	assignPermissionsRequestBytes, err := json.Marshal(assignPermissionsRequest)
+	assignPermissionsRequestBytes, err := json.Marshal(assignPermissionsReq)
 	if err != nil {
 		return err
 	}

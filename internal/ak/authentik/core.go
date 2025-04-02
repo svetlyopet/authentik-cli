@@ -104,7 +104,7 @@ func (a *authentik) DeleteGroup(uuid string) error {
 	return nil
 }
 
-func (a authentik) CreateUser(usr ak.User) (*ak.User, error) {
+func (a *authentik) CreateUser(usr ak.User) (*ak.User, error) {
 	createUserReq := createUserRequest{
 		Username: usr.Username,
 		Name:     usr.Name,
@@ -142,7 +142,7 @@ func (a authentik) CreateUser(usr ak.User) (*ak.User, error) {
 	return mapToCreateOrUpdateUserResponse(&userResp), nil
 }
 
-func (a authentik) AddUserToGroup(userPK int, groupUuid string) error {
+func (a *authentik) AddUserToGroup(userPK int, groupUuid string) error {
 	userAddRequest := groupUserAddRequest{
 		PK: fmt.Sprintf("%d", userPK),
 	}
