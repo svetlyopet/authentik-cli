@@ -1,6 +1,7 @@
 package core
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
@@ -50,6 +51,25 @@ func CreateUser(username, name, surname, email, tenant string) (err error) {
 			return err
 		}
 	}
+
+	return nil
+}
+
+func DeleteUser(username string) (err error) {
+	user, err := ak.Repo.GetUserByUsername(username)
+	if err != nil {
+		var notExistsError *customErrors.NotExists
+		if errors.As(err, &notExistsError) {
+			return nil
+		}
+	}
+
+	err = ak.Repo.DeleteUser(fmt.Sprintf("%d", user.PK))
+	if err != nil {
+		return err
+	}
+
+	logger.WriteStdout(constants.ObjectTypeUser, constants.ActionDeleted, username)
 
 	return nil
 }

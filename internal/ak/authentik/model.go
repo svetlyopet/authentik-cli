@@ -35,6 +35,7 @@ type userObj struct {
 	IsActive   bool           `json:"is_active"`
 	LastLogin  string         `json:"last_login"`
 	Email      string         `json:"email"`
+	Path       string         `json:"path"`
 	Attributes userAttributes `json:"attributes"`
 	Uid        string         `json:"uid" binding:"required"`
 }
@@ -99,4 +100,9 @@ type createOrUpdateUserResponse struct {
 
 type groupUserAddRequest struct {
 	PK string `json:"pk" binding:"required"`
+}
+
+type getUserResponse struct {
+	Pagination pagination `json:"pagination" binding:"required"`
+	Results    []userObj  `json:"results" binding:"required"`
 }

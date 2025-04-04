@@ -55,3 +55,19 @@ func mapToCreateOrUpdateUserResponse(user *createOrUpdateUserResponse) *ak.User 
 		},
 	}
 }
+
+func mapToUserGetResponse(user *getUserResponse) *ak.User {
+	var userGetResponse ak.User
+
+	for _, userResults := range user.Results {
+		userGetResponse.PK = userResults.PK
+		userGetResponse.Username = userResults.Username
+		userGetResponse.Name = userResults.Name
+		userGetResponse.Email = userResults.Email
+		userGetResponse.Path = userResults.Path
+		userGetResponse.IsActive = userResults.IsActive
+		userGetResponse.Attributes.UserType = userResults.Attributes.UserType
+	}
+
+	return &userGetResponse
+}

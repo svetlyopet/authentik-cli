@@ -12,4 +12,6 @@ type AuthentikRepository interface {
 	DeleteGroup(uuid string) error
 	AddUserToGroup(userPK int, uuid string) error
 	CreateUser(usr User) (*User, error)
+	GetUserByUsername(username string) (*User, error)
+	DeleteUser(userPK string) error
 }

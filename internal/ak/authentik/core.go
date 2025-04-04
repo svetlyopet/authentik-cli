@@ -14,6 +14,7 @@ import (
 
 const (
 	coreUsersPath              = "%s/api/v3/core/users/"
+	coreUsersPathUpdateDelete  = "%s/api/v3/core/users/%s/"
 	coreGroupsPath             = "%s/api/v3/core/groups/"
 	coreGroupsPathUpdateDelete = "%s/api/v3/core/groups/%s/"
 	coreGroupsAddUserPath      = "%s/api/v3/core/groups/%s/add_user/"
@@ -161,6 +162,56 @@ func (a *authentik) AddUserToGroup(userPK int, groupUuid string) error {
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
 		return customErrors.NewUnexpectedResult(fmt.Sprintf("%s", errBody))
+	}
+
+	return nil
+}
+
+func (a *authentik) GetUserByUsername(username string) (*ak.User, error) {
+	params := url.Values{}
+	params.Add("username", username)
+
+	response, err := a.doRequestWithQuery(http.MethodGet, fmt.Sprintf(coreUsersPath, a.url), nil, &params)
+	if err != nil {
+		return nil, err
+	}
+
+	defer response.Body.Close()
+
+	if response.StatusCode == http.StatusNotFound {
+		return nil, customErrors.NewNotExists("user not found")
+	}
+	if response.StatusCode != http.StatusOK {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get user: %s", errBody))
+	}
+
+	var userResp getUserResponse
+	err = json.NewDecoder(response.Body).Decode(&userResp)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(userResp.Results) == 0 {
+		return nil, nil
+	}
+
+	if len(userResp.Results) > 1 {
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("found more than 1 user while searching for %s", username))
+	}
+	return mapToUserGetResponse(&userResp), nil
+}
+
+func (a *authentik) DeleteUser(userPK string) error {
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreUsersPathUpdateDelete, a.url, userPK), nil)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusNoContent {
+		errBody, _ := io.ReadAll(response.Body)
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete user: %s", string(errBody)))
 	}
 
 	return nil

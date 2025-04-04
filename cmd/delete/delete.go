@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/spf13/cobra"
 	t "github.com/svetlyopet/authentik-cli/cmd/delete/tenant"
+	u "github.com/svetlyopet/authentik-cli/cmd/delete/user"
 )
 
 var DeleteCmd = &cobra.Command{
@@ -22,6 +23,7 @@ Examples:
 
 func addSubcommands() {
 	DeleteCmd.AddCommand(t.DeleteTenantCmd)
+	DeleteCmd.AddCommand(u.DeleteUserCmd)
 }
 
 func init() {
