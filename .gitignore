@@ -32,6 +32,11 @@ ci/integration_tests/certs
 ci/integration_tests/custom-templates
 ci/integration_tests/media
 
+# Coverage files
+c.out
+coverage.out
+coverage.xml
+
 # IDE configurations
 .vscode/
 .idea/

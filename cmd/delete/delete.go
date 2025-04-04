@@ -8,7 +8,7 @@ import (
 
 var DeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Deletes a resource from stdin",
+	Short: "Delete a resource from stdin",
 	Long: `Deletes resources in Authentik which are native,
 like applications and providers, or abstractions, like tenants,
 which are created by this tool.
