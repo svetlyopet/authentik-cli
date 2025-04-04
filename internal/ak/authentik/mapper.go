@@ -48,6 +48,7 @@ func mapToCreateOrUpdateUserResponse(user *createOrUpdateUserResponse) *ak.User 
 		Username: user.Username,
 		Name:     user.Name,
 		Email:    user.Email,
+		Path:     user.Path,
 		IsActive: user.IsActive,
 		Attributes: ak.UserAttributes{
 			UserType: user.Attributes.UserType,
