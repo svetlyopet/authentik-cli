@@ -23,7 +23,7 @@ func Create(name string) (err error) {
 			return err
 		}
 	} else {
-		logger.WriteStdio(constants.ObjectTypeRole, constants.ActionUnchanged, roleName)
+		logger.WriteStdout(constants.ObjectTypeRole, constants.ActionUnchanged, roleName)
 	}
 
 	groupName := fmt.Sprintf(constants.TenantAdminGroupNamePattern, name)
@@ -37,7 +37,7 @@ func Create(name string) (err error) {
 			return err
 		}
 	} else {
-		logger.WriteStdio(constants.ObjectTypeGroup, constants.ActionUnchanged, groupName)
+		logger.WriteStdout(constants.ObjectTypeGroup, constants.ActionUnchanged, groupName)
 	}
 
 	return nil

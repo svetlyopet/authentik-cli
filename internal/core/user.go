@@ -42,7 +42,7 @@ func CreateUser(username, name, surname, email, tenant string) (err error) {
 		return err
 	}
 
-	logger.WriteStdio(constants.ObjectTypeUser, constants.ActionCreated, username)
+	logger.WriteStdout(constants.ObjectTypeUser, constants.ActionCreated, username)
 
 	if tenant != "" {
 		err = AddUserToGroup(user.PK, tenantGroup.PK, tenantGroup.Name)
