@@ -49,7 +49,7 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes ak.Group
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create group: %s", string(errBody)))
 	}
 
-	var createGroupResp createGroupResponse
+	var createGroupResp createOrUpdateGroupResponse
 	err = json.NewDecoder(response.Body).Decode(&createGroupResp)
 	if err != nil {
 		return nil, err
@@ -131,7 +131,7 @@ func (a *authentik) CreateUser(usr ak.User) (*ak.User, error) {
 	defer response.Body.Close()
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("%s", errBody))
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create user: %s", errBody))
 	}
 
 	var userResp createOrUpdateUserResponse
@@ -183,7 +183,7 @@ func (a *authentik) GetUserByUsername(username string) (*ak.User, error) {
 	}
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get user: %s", errBody))
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get user by username: %s", errBody))
 	}
 
 	var userResp getUserResponse

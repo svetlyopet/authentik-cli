@@ -72,7 +72,7 @@ type createGroupRequest struct {
 	Roles       []string        `json:"roles"`
 }
 
-type createGroupResponse struct {
+type createOrUpdateGroupResponse struct {
 	groupsObj
 }
 

@@ -23,7 +23,7 @@ func mapToGetRoleByNameResponse(roles *getRolesResponse) *ak.Role {
 	return res
 }
 
-func mapToCreateOrUpdateGroupResponse(group *createGroupResponse) *ak.Group {
+func mapToCreateOrUpdateGroupResponse(group *createOrUpdateGroupResponse) *ak.Group {
 	return &ak.Group{
 		PK:   group.PK,
 		Name: group.Name,
