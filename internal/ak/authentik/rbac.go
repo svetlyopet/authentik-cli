@@ -41,7 +41,7 @@ func (a *authentik) CreateRole(name string) (*ak.Role, error) {
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create role: %s", string(errBody)))
 	}
 
-	var createRoleResp createRoleResponse
+	var createRoleResp createOrUpdateRoleResponse
 	err = json.NewDecoder(response.Body).Decode(&createRoleResp)
 	if err != nil {
 		return nil, err

@@ -54,7 +54,7 @@ type createRoleRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
-type createRoleResponse struct {
+type createOrUpdateRoleResponse struct {
 	roleObj
 }
 

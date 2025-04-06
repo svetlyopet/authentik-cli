@@ -4,7 +4,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 )
 
-func mapToCreateOrUpdateRoleResponse(role *createRoleResponse) *ak.Role {
+func mapToCreateOrUpdateRoleResponse(role *createOrUpdateRoleResponse) *ak.Role {
 	return &ak.Role{
 		PK:   role.PK,
 		Name: role.Name,
