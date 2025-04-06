@@ -32,10 +32,8 @@ ci/integration_tests/certs
 ci/integration_tests/custom-templates
 ci/integration_tests/media
 
-# Coverage files
-c.out
-coverage.out
-coverage.xml
+# Local bin directory
+bin/
 
 # IDE configurations
 .vscode/
