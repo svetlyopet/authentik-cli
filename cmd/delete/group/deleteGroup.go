@@ -12,7 +12,7 @@ func DeleteGroupCmd() *cobra.Command {
 		Long: `Deletes a group in Authentik.
 
 Examples:
-  # Delete a user
+  # Delete a group
   authentik-cli delete group example-group`,
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
