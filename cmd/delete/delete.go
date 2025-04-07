@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/spf13/cobra"
+	g "github.com/svetlyopet/authentik-cli/cmd/delete/group"
 	t "github.com/svetlyopet/authentik-cli/cmd/delete/tenant"
 	u "github.com/svetlyopet/authentik-cli/cmd/delete/user"
 )
@@ -24,6 +25,7 @@ Examples:
 
 	c.AddCommand(t.DeleteTenantCmd())
 	c.AddCommand(u.DeleteUserCmd())
+	c.AddCommand(g.DeleteGroupCmd())
 
 	return c
 }

@@ -1,8 +1,11 @@
 package rbac
 
 import (
+	"errors"
+
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
+	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
 
@@ -30,8 +33,16 @@ func GetRoleByName(name string) (role *ak.Role, err error) {
 	return role, nil
 }
 
-func DeleteRole(name, uuid string) (err error) {
-	err = ak.Repo.DeleteRole(uuid)
+func DeleteRole(name string) (err error) {
+	role, err := GetRoleByName(name)
+	if err != nil {
+		var notExistsError *customErrors.NotExists
+		if !errors.As(err, &notExistsError) {
+			return err
+		}
+	}
+
+	err = ak.Repo.DeleteRole(role.PK)
 	if err != nil {
 		return err
 	}
