@@ -6,8 +6,9 @@ type Role struct {
 }
 
 type Group struct {
-	PK   string
-	Name string
+	PK              string
+	Name            string
+	GroupAttributes GroupAttributes
 }
 
 type GroupAttributes struct {

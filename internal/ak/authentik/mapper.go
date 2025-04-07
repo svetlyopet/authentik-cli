@@ -27,6 +27,9 @@ func mapToCreateOrUpdateGroupResponse(group *createOrUpdateGroupResponse) *ak.Gr
 	return &ak.Group{
 		PK:   group.PK,
 		Name: group.Name,
+		GroupAttributes: ak.GroupAttributes{
+			Tenant: group.Attributes.Tenant,
+		},
 	}
 }
 
@@ -36,6 +39,9 @@ func mapToGetGroupByNameResponse(roles *getGroupsResponse) *ak.Group {
 		res = &ak.Group{
 			PK:   role.PK,
 			Name: role.Name,
+			GroupAttributes: ak.GroupAttributes{
+				Tenant: role.Attributes.Tenant,
+			},
 		}
 	}
 

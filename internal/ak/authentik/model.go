@@ -19,13 +19,13 @@ type groupsObj struct {
 	ParentName  string          `json:"parent_name"`
 	Users       []int           `json:"users"`
 	UsersObj    []userObj       `json:"users_obj" binding:"required"`
-	Attributes  groupAttributes `json:"attributes"`
+	Attributes  groupAttributes `json:"attributes,omitempty"`
 	Roles       []string        `json:"roles"`
 	RolesObj    []roleObj       `json:"roles_obj" binding:"required"`
 }
 
 type groupAttributes struct {
-	Tenant string `json:"tenant"`
+	Tenant string `json:"tenant,omitempty"`
 }
 
 type userObj struct {
@@ -41,8 +41,8 @@ type userObj struct {
 }
 
 type userAttributes struct {
-	UserType string `json:"userType"`
-	Tenant   string `json:"tenant"`
+	UserType string `json:"userType,omitempty"`
+	Tenant   string `json:"tenant,omitempty"`
 }
 
 type roleObj struct {
