@@ -38,9 +38,9 @@ func init() {
 }
 
 func addSubcommands() {
-	rootCmd.AddCommand(configCmd)
-	rootCmd.AddCommand(c.CreateCmd)
-	rootCmd.AddCommand(d.DeleteCmd)
+	rootCmd.AddCommand(configCmd())
+	rootCmd.AddCommand(c.CreateCmd())
+	rootCmd.AddCommand(d.DeleteCmd())
 }
 
 func initConfig() {
