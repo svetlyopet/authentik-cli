@@ -1,5 +1,8 @@
 package constants
 
+// CmdName holds the name of this CLI tool
+const CmdName = "authentik-cli"
+
 // CfgFilename represents the default config filename
 const CfgFilename = ".authentik-cli"
 

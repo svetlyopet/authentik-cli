@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/internal/core"
 )
 
@@ -19,14 +20,14 @@ func CreateUserCmd() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "user",
 		Short: "Create a user",
-		Long: `Creates a local user in Authentik.
+		Long: fmt.Sprintf(`Creates a local user in Authentik.
 
 Examples:
   # Create a user
-  authentik-cli create user example-user --name=example --surname=user --email=example-user@example.com
+  %s create user example-user --name=example --surname=user --email=example-user@example.com
 
   # Create a user who will be a tenant admin
-  authentik-cli create user example-user --name=example --surname=user --email=example-user@example.com --tenant-admin=example-tenant`,
+  %s create user example-user --name=example --surname=user --email=example-user@example.com --tenant-admin=example-tenant`, constants.CmdName, constants.CmdName),
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			username := args[0]

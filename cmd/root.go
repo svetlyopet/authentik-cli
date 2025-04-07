@@ -16,11 +16,11 @@ import (
 var cfgFile string
 
 var rootCmd = &cobra.Command{
-	Use:   "authentik-cli",
+	Use:   constants.CmdName,
 	Short: "A CLI tool for managing Authentik",
-	Long: `authentik-cli is a CLI that enables managing resources
+	Long: fmt.Sprintf(`%s is a CLI that enables managing resources
 in Authentik deployments to create more complex setups
-and enable multi-tenancy and automation`,
+and enable multi-tenancy and automation`, constants.CmdName),
 }
 
 func Execute() {

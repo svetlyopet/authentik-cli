@@ -1,7 +1,10 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
+	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/internal/core"
 )
 
@@ -9,11 +12,11 @@ func DeleteGroupCmd() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "group",
 		Short: "Delete a group",
-		Long: `Deletes a group in Authentik.
+		Long: fmt.Sprintf(`Deletes a group in Authentik.
 
 Examples:
   # Delete a group
-  authentik-cli delete group example-group`,
+  %s delete group example-group`, constants.CmdName),
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
