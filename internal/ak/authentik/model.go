@@ -15,12 +15,12 @@ type groupsObj struct {
 	NumPK       int             `json:"num_pk" binding:"required"`
 	Name        string          `json:"name" binding:"required"`
 	IsSuperuser bool            `json:"is_superuser"`
-	Parent      string          `json:"parent"`
-	ParentName  string          `json:"parent_name"`
-	Users       []int           `json:"users"`
+	Parent      string          `json:"parent,omitempty"`
+	ParentName  string          `json:"parent_name,omitempty"`
+	Users       []int           `json:"users,omitempty"`
 	UsersObj    []userObj       `json:"users_obj" binding:"required"`
-	Attributes  groupAttributes `json:"attributes,omitempty"`
-	Roles       []string        `json:"roles"`
+	Attributes  groupAttributes `json:"attributes"`
+	Roles       []string        `json:"roles,omitempty"`
 	RolesObj    []roleObj       `json:"roles_obj" binding:"required"`
 }
 
@@ -34,7 +34,7 @@ type userObj struct {
 	Name       string         `json:"name" binding:"required"`
 	IsActive   bool           `json:"is_active"`
 	LastLogin  string         `json:"last_login"`
-	Email      string         `json:"email"`
+	Email      string         `json:"email" binding:"required"`
 	Path       string         `json:"path"`
 	Attributes userAttributes `json:"attributes"`
 	Uid        string         `json:"uid" binding:"required"`
@@ -66,10 +66,10 @@ type getRolesResponse struct {
 type createGroupRequest struct {
 	Name        string          `json:"name" binding:"required"`
 	IsSuperuser bool            `json:"is_superuser"`
-	Parent      string          `json:"parent"`
-	Users       []int           `json:"users"`
+	Parent      string          `json:"parent,omitempty"`
+	Users       []int           `json:"users,omitempty"`
 	Attributes  groupAttributes `json:"attributes"`
-	Roles       []string        `json:"roles"`
+	Roles       []string        `json:"roles,omitempty"`
 }
 
 type createOrUpdateGroupResponse struct {
