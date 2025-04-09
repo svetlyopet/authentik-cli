@@ -29,3 +29,28 @@ type UserAttributes struct {
 	UserType string
 	Tenant   string
 }
+
+type OidcProvider struct {
+	PK                   int
+	Name                 string
+	AuthenticationFlow   string
+	AuthorizationFlow    string
+	InvalidationFlow     string
+	PropertyMappings     []string
+	ClientType           string
+	ClientId             string
+	ClientSecret         string
+	AccessCodeValidity   string
+	AccessTokenValidity  string
+	RefreshTokenValidity string
+	SigningKey           string
+	EncryptionKey        string
+	RedirectUris         []OidcRedirectUri
+	SubMode              string
+	IssuerMode           string
+}
+
+type OidcRedirectUri struct {
+	MatchingMode string
+	Url          string
+}

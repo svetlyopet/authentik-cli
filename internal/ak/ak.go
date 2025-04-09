@@ -14,4 +14,5 @@ type AuthentikRepository interface {
 	CreateUser(usr User) (*User, error)
 	GetUserByUsername(username string) (*User, error)
 	DeleteUser(userPK string) error
+	CreateOidcProvider(provider OidcProvider) (*OidcProvider, error)
 }

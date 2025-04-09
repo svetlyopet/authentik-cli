@@ -78,3 +78,33 @@ func mapToUserGetResponse(user *getUserResponse) *ak.User {
 
 	return &userGetResponse
 }
+
+func mapToCreateOrUpdateProviderResponse(provider *createOrUpdateOidcProviderResponse) *ak.OidcProvider {
+	var redirectUris []ak.OidcRedirectUri
+
+	for _, redirectUri := range provider.RedirectUris {
+		redirectUris = append(redirectUris, ak.OidcRedirectUri{
+			MatchingMode: redirectUri.MatchingMode,
+			Url:          redirectUri.Url,
+		})
+	}
+
+	providerResp := ak.OidcProvider{
+		PK:                 provider.PK,
+		Name:               provider.Name,
+		AuthenticationFlow: provider.AuthenticationFlow,
+		AuthorizationFlow:  provider.AuthorizationFlow,
+		InvalidationFlow:   provider.IssuerMode,
+		PropertyMappings:   provider.PropertyMappings,
+		ClientType:         provider.ClientType,
+		ClientId:           provider.ClientId,
+		ClientSecret:       provider.ClientSecret,
+		SigningKey:         provider.SigningKey,
+		EncryptionKey:      provider.EncryptionKey,
+		RedirectUris:       redirectUris,
+		SubMode:            provider.SubMode,
+		IssuerMode:         provider.IssuerMode,
+	}
+
+	return &providerResp
+}
