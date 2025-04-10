@@ -18,6 +18,7 @@ const (
 	coreGroupsPath             = "%s/api/v3/core/groups/"
 	coreGroupsPathUpdateDelete = "%s/api/v3/core/groups/%s/"
 	coreGroupsAddUserPath      = "%s/api/v3/core/groups/%s/add_user/"
+	coreApplicationsPath       = "%s/api/v3/core/applications/"
 )
 
 func (a *authentik) CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
@@ -215,4 +216,42 @@ func (a *authentik) DeleteUser(userPK string) error {
 	}
 
 	return nil
+}
+
+func (a *authentik) CreateApplication(name, slug string, providerPK int) (*ak.Application, error) {
+	createApplicationRequest := createOrUpdateApplicationRequest{
+		Name:     name,
+		Slug:     slug,
+		Provider: providerPK,
+	}
+
+	createApplicationRequestBytes, err := json.Marshal(createApplicationRequest)
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := a.doRequest(http.MethodPost,
+		fmt.Sprintf(coreApplicationsPath, a.url),
+		bytes.NewBuffer(createApplicationRequestBytes))
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusCreated {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create application: %s", string(errBody)))
+	}
+
+	var createApplicationResp createOrUpdateApplicationResponse
+	err = json.NewDecoder(response.Body).Decode(&createApplicationResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapToCreateOrUpdateApplicationResponse(&createApplicationResp), nil
+}
+
+func GetFlows() ([]ak.Flow, error) {
+	return nil, nil
 }

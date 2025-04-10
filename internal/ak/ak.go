@@ -15,4 +15,6 @@ type AuthentikRepository interface {
 	GetUserByUsername(username string) (*User, error)
 	DeleteUser(userPK string) error
 	CreateOidcProvider(provider OidcProvider) (*OidcProvider, error)
+	CreateApplication(name, slug string, providerPK int) (*Application, error)
+	GetFlows() ([]Flow, error)
 }

@@ -10,27 +10,3 @@ const (
 	ViewProviderPerm         = "authentik_core.view_provider"
 	ViewEventPerm            = "authentik_events.view_event"
 )
-
-const (
-	OidcClientTypeConfidential = "confidential"
-	OidcClientTypePublic       = "public"
-)
-
-const (
-	OidcRedirectUriMatchingModeStrict = "strict"
-	OidcRedirectUriMatchingModeRegex  = "regex"
-)
-
-const (
-	OidcSubModeHashedUserId = "hashed_user_id"
-	OidcSubModeUserId       = "user_id"
-	OidcSubModeUserUuid     = "user_uuid"
-	OidcSubModeUserUsername = "user_username"
-	OidcSubModeUserEmail    = "user_email"
-	OidcSubModeUserUpn      = "user_upn"
-)
-
-const (
-	OidcIssuerModeGlobal      = "global"
-	OidcIssuerModePerProvider = "per_provider"
-)

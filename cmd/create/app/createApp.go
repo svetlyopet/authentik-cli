@@ -5,13 +5,16 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/svetlyopet/authentik-cli/internal/app"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/internal/core"
+	"github.com/svetlyopet/authentik-cli/internal/provider"
 )
 
 var slug string
 var providerType string
 var oidcClientType string
+var oidcEncryptToken bool
+var oidcConsentType string
 var oidcRedirectUris []string
 
 func CreateAppCmd() *cobra.Command {
@@ -37,10 +40,12 @@ Examples:
 		},
 	}
 
-	c.Flags().StringVar(&slug, "slug", "", "Given name of the user")
-	c.Flags().StringVar(&providerType, "provider-type", "", "Surname of the user")
-	c.Flags().StringVar(&oidcClientType, "oidc-client-type", "", "Email associated with the user")
-	c.Flags().StringArrayVar(&oidcRedirectUris, "oidc-redirect-uri", []string{}, "Grant admin permissions for a Tenant")
+	c.Flags().StringVar(&slug, "slug", "", "Application slug")
+	c.Flags().StringVar(&providerType, "provider-type", "", "Provider type")
+	c.Flags().StringVar(&oidcClientType, "oidc-client-type", "public", "OIDC client type")
+	c.Flags().StringVar(&oidcConsentType, "oidc-consent-type", "explicit", "OIDC consent type")
+	c.Flags().BoolVar(&oidcEncryptToken, "oidc-encrypt-tokens", false, "Enable encrypted tokens for OIDC provider")
+	c.Flags().StringArrayVar(&oidcRedirectUris, "oidc-redirect-uri", []string{}, "Redirect URIs for the OIDC provider")
 
 	err = c.MarkFlagRequired("provider-type")
 	if err != nil {
@@ -52,12 +57,15 @@ Examples:
 }
 
 func createApp(name, providerType string) error {
+	var providerPK int
+
 	switch providerType {
 	case "oidc":
-		err := app.CreateOidcApplication(name, slug, providerType, oidcClientType, oidcRedirectUris)
+		p, err := provider.CreateOidcProvider(name, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUris)
 		if err != nil {
 			return err
 		}
+		providerPK = p.PK
 	case "ldap":
 		return fmt.Errorf("LDAP provider is not supported yet")
 	case "saml":
@@ -66,6 +74,11 @@ func createApp(name, providerType string) error {
 		return fmt.Errorf("Proxy provider is not supported yet")
 	default:
 		return fmt.Errorf("%s is not a supported provider type", providerType)
+	}
+
+	err := core.CreateApplication(name, slug, providerPK)
+	if err != nil {
+		return err
 	}
 
 	return nil

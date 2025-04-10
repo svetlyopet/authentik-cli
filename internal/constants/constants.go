@@ -21,6 +21,12 @@ const ObjectTypeGroup = "group"
 // ObjectTypeUser holds the name of the User object
 const ObjectTypeUser = "user"
 
+// ObjectTypeApplication holds the name of the Application object
+const ObjectTypeApplication = "application"
+
+// ObjectTypeProvider holds the name of the Provider object
+const ObjectTypeProvider = "provider"
+
 const ActionCreated = "created"
 const ActionChanged = "changed"
 const ActionUnchanged = "unchanged"

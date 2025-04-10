@@ -84,6 +84,43 @@ type oidcProvider struct {
 	JWKSSources            []string          `json:"jwk_sources"`
 }
 
+type application struct {
+	PK                      string         `json:"pk" binding:"required"`
+	Name                    string         `json:"name" binding:"required"`
+	Slug                    string         `json:"slug" binding:"required"`
+	Provider                int            `json:"provider"`
+	ProviderObj             baseProvider   `json:"provider_obj" binding:"required"`
+	BackchannelProviders    []int          `json:"backchannel_providers"`
+	BackchannelProvidersObj []baseProvider `json:"backchannel_providers_obj" binding:"required"`
+	LaunchUrl               string         `json:"launch_url" binding:"required"`
+	OpenInNewTab            bool           `json:"open_in_new_tab"`
+	MetaLaunchUrl           string         `json:"meta_launch_url"`
+	MetaIcon                string         `json:"meta_icon" binding:"required"`
+	MetaDescription         string         `json:"meta_description"`
+	MetaPublisher           string         `json:"meta_publisher"`
+	PolicyEngineMode        string         `json:"policy_engine_mode"`
+	Group                   string         `json:"group"`
+}
+
+type flow struct {
+	PK                      string   `json:"pk" binding:"required"`
+	PolicyBindingModelPtrId string   `json:"policyindingmodel_ptr_id" binding:"required"`
+	Name                    string   `json:"name" binding:"required"`
+	Slug                    string   `json:"slug" binding:"required"`
+	Title                   string   `json:"title" binding:"required"`
+	Designation             string   `json:"designation" binding:"required"`
+	Background              string   `json:"background" binding:"required"`
+	Stages                  []string `json:"stages" binding:"required"`
+	Policies                []string `json:"policies" binding:"required"`
+	CacheCount              int      `json:"cache_count" binding:"required"`
+	PolicyEngineMode        string   `json:"policy_engine_mode"`
+	CompatabilityMode       bool     `json:"compatability_mode"`
+	ExportUrl               string   `json:"export_url" binding:"required"`
+	Layout                  string   `json:"layout"`
+	DeniedAction            string   `json:"denied_action"`
+	Authentication          string   `json:"authentication"`
+}
+
 type createRoleRequest struct {
 	Name string `json:"name" binding:"required"`
 }
@@ -142,20 +179,23 @@ type getUserResponse struct {
 }
 
 type createOrUpdateOidcProviderRequest struct {
-	Name                 string            `json:"name" binding:"required"`
-	AuthenticationFlow   string            `json:"authentication_flow" binding:"required"`
-	AuthorizationFlow    string            `json:"authorization_flow" binding:"required"`
-	InvalidationFlow     string            `json:"invalidation_flow" binding:"required"`
-	PropertyMappings     []string          `json:"property_mappings" binding:"required"`
-	ClientType           string            `json:"client_type" binding:"required"`
-	AccessCodeValidity   string            `json:"access_code_validity,omitempty"`
-	AccessTokenValidity  string            `json:"access_token_validity,omitempty"`
-	RefreshTokenValidity string            `json:"refresh_token_validity,omitempty"`
-	SigningKey           string            `json:"signing_key" binding:"required"`
-	EncryptionKey        string            `json:"encryption_key,omitempty"`
-	RedirectUris         []oidcRedirectUri `json:"redirect_uris" binding:"required"`
-	SubMode              string            `json:"sub_mode" binding:"required"`
-	IssuerMode           string            `json:"issuer_mode" binding:"required"`
+	Name                   string            `json:"name" binding:"required"`
+	AuthenticationFlow     string            `json:"authentication_flow" binding:"required"`
+	AuthorizationFlow      string            `json:"authorization_flow" binding:"required"`
+	InvalidationFlow       string            `json:"invalidation_flow" binding:"required"`
+	PropertyMappings       []string          `json:"property_mappings,omitempty"`
+	ClientType             string            `json:"client_type" binding:"required"`
+	AccessCodeValidity     string            `json:"access_code_validity,omitempty"`
+	AccessTokenValidity    string            `json:"access_token_validity,omitempty"`
+	RefreshTokenValidity   string            `json:"refresh_token_validity,omitempty"`
+	IncludeClaimsInIdToken bool              `json:"include_claims_in_id_token,omitempty"`
+	SigningKey             string            `json:"signing_key,omitempty"`
+	EncryptionKey          string            `json:"encryption_key,omitempty"`
+	RedirectUris           []oidcRedirectUri `json:"redirect_uris" binding:"required"`
+	SubMode                string            `json:"sub_mode" binding:"required"`
+	IssuerMode             string            `json:"issuer_mode" binding:"required"`
+	JwtFederationSources   []string          `json:"jwt_federation_sources,omitempty"`
+	JwtFederationProviders []int             `json:"jwt_federation_providers,omitempty"`
 }
 
 type oidcRedirectUri struct {
@@ -165,4 +205,25 @@ type oidcRedirectUri struct {
 
 type createOrUpdateOidcProviderResponse struct {
 	oidcProvider
+}
+
+type createOrUpdateApplicationRequest struct {
+	Name                 string `json:"name" binding:"required"`
+	Slug                 string `json:"slug" binding:"required"`
+	Provider             int    `json:"provider"`
+	BackchannelProviders []int  `json:"backchannel_providers,omitempty"`
+	OpenInNewTab         bool   `json:"open_in_new_tab,omitempty"`
+	MetaLaunchUrl        string `json:"meta_launch_url,omitempty"`
+	MetaDescription      string `json:"meta_description,omitempty"`
+	PolicyEngineMode     string `json:"policy_engine_mode,omitempty"`
+	Group                string `json:"group,omitempty"`
+}
+
+type createOrUpdateApplicationResponse struct {
+	application
+}
+
+type getFlowsResponse struct {
+	Pagination pagination `json:"pagination" binding:"required"`
+	Results    []flow     `json:"results" binding:"required"`
 }

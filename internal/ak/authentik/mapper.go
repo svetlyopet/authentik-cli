@@ -90,21 +90,49 @@ func mapToCreateOrUpdateProviderResponse(provider *createOrUpdateOidcProviderRes
 	}
 
 	providerResp := ak.OidcProvider{
-		PK:                 provider.PK,
-		Name:               provider.Name,
-		AuthenticationFlow: provider.AuthenticationFlow,
-		AuthorizationFlow:  provider.AuthorizationFlow,
-		InvalidationFlow:   provider.IssuerMode,
-		PropertyMappings:   provider.PropertyMappings,
-		ClientType:         provider.ClientType,
-		ClientId:           provider.ClientId,
-		ClientSecret:       provider.ClientSecret,
-		SigningKey:         provider.SigningKey,
-		EncryptionKey:      provider.EncryptionKey,
-		RedirectUris:       redirectUris,
-		SubMode:            provider.SubMode,
-		IssuerMode:         provider.IssuerMode,
+		Provider: ak.Provider{
+			PK:                 provider.PK,
+			Name:               provider.Name,
+			AuthenticationFlow: provider.AuthenticationFlow,
+			AuthorizationFlow:  provider.AuthorizationFlow,
+			InvalidationFlow:   provider.IssuerMode,
+		},
+		PropertyMappings: provider.PropertyMappings,
+		ClientType:       provider.ClientType,
+		ClientId:         provider.ClientId,
+		ClientSecret:     provider.ClientSecret,
+		SigningKey:       provider.SigningKey,
+		EncryptionKey:    provider.EncryptionKey,
+		RedirectUris:     redirectUris,
+		SubMode:          provider.SubMode,
+		IssuerMode:       provider.IssuerMode,
 	}
 
 	return &providerResp
+}
+
+func mapToCreateOrUpdateApplicationResponse(application *createOrUpdateApplicationResponse) *ak.Application {
+	applicationResp := ak.Application{
+		PK:       application.PK,
+		Name:     application.Name,
+		Slug:     application.Slug,
+		Provider: application.Provider,
+	}
+
+	return &applicationResp
+}
+
+func mapToGetFlowsResponse(flows *getFlowsResponse) []ak.Flow {
+	var flowsResp []ak.Flow
+
+	for _, f := range flows.Results {
+		flowsResp = append(flowsResp, ak.Flow{
+			PK:          f.PK,
+			Name:        f.Name,
+			Slug:        f.Slug,
+			Designation: f.Designation,
+		})
+	}
+
+	return flowsResp
 }

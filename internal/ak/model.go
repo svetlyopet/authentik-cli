@@ -30,12 +30,16 @@ type UserAttributes struct {
 	Tenant   string
 }
 
+type Provider struct {
+	PK                 int
+	Name               string
+	AuthenticationFlow string
+	AuthorizationFlow  string
+	InvalidationFlow   string
+}
+
 type OidcProvider struct {
-	PK                   int
-	Name                 string
-	AuthenticationFlow   string
-	AuthorizationFlow    string
-	InvalidationFlow     string
+	Provider
 	PropertyMappings     []string
 	ClientType           string
 	ClientId             string
@@ -53,4 +57,18 @@ type OidcProvider struct {
 type OidcRedirectUri struct {
 	MatchingMode string
 	Url          string
+}
+
+type Application struct {
+	PK       string
+	Name     string
+	Slug     string
+	Provider int
+}
+
+type Flow struct {
+	PK          string
+	Name        string
+	Slug        string
+	Designation string
 }
