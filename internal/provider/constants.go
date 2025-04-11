@@ -11,7 +11,7 @@ const (
 )
 
 const (
-	OidcSubModeDefault      = OidcSubModeUserUpn
+	OidcSubModeDefault      = OidcSubModeUserEmail
 	OidcSubModeHashedUserId = "hashed_user_id"
 	OidcSubModeUserId       = "user_id"
 	OidcSubModeUserUuid     = "user_uuid"
@@ -21,7 +21,7 @@ const (
 )
 
 const (
-	OidcIssuerModeDefault     = OidcIssuerModeGlobal
+	OidcIssuerModeDefault     = OidcIssuerModePerProvider
 	OidcIssuerModeGlobal      = "global"
 	OidcIssuerModePerProvider = "per_provider"
 )
