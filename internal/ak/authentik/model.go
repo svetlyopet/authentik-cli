@@ -227,3 +227,8 @@ type getFlowsResponse struct {
 	Pagination pagination `json:"pagination" binding:"required"`
 	Results    []flow     `json:"results" binding:"required"`
 }
+
+type getApplicationsResponse struct {
+	Pagination pagination    `json:"pagination" binding:"required"`
+	Results    []application `json:"results" binding:"required"`
+}

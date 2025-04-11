@@ -113,10 +113,11 @@ func mapToCreateOrUpdateProviderResponse(provider *createOrUpdateOidcProviderRes
 
 func mapToCreateOrUpdateApplicationResponse(application *createOrUpdateApplicationResponse) *ak.Application {
 	applicationResp := ak.Application{
-		PK:       application.PK,
-		Name:     application.Name,
-		Slug:     application.Slug,
-		Provider: application.Provider,
+		PK:           application.PK,
+		Name:         application.Name,
+		Slug:         application.Slug,
+		ProviderPK:   application.ProviderObj.PK,
+		ProviderName: application.ProviderObj.Name,
 	}
 
 	return &applicationResp
@@ -135,4 +136,18 @@ func mapToGetFlowsResponse(flows *getFlowsResponse) []ak.Flow {
 	}
 
 	return flowsResp
+}
+
+func mapToGetApplicationsByNameResponse(apps *getApplicationsResponse) *ak.Application {
+	var applicationsResp ak.Application
+
+	for _, app := range apps.Results {
+		applicationsResp.PK = app.PK
+		applicationsResp.Name = app.Name
+		applicationsResp.Slug = app.Slug
+		applicationsResp.ProviderPK = app.ProviderObj.PK
+		applicationsResp.ProviderName = app.ProviderObj.Name
+	}
+
+	return &applicationsResp
 }

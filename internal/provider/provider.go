@@ -1,8 +1,11 @@
 package provider
 
 import (
+	"errors"
+
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
+	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 	"github.com/svetlyopet/authentik-cli/internal/flow"
 	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
@@ -66,4 +69,19 @@ func CreateOidcProvider(name, oidcClientType, oidcConsentType string, oidcEncryp
 	logger.WriteStdout(constants.ObjectTypeProvider, constants.ActionCreated, name)
 
 	return provider, nil
+}
+
+func DeleteProvider(name string, pk int) (err error) {
+	err = ak.Repo.DeleteProvider(pk)
+	if err != nil {
+		var notExistsError *customErrors.NotExists
+		if errors.As(err, &notExistsError) {
+			return nil
+		}
+		return err
+	}
+
+	logger.WriteStdout(constants.ObjectTypeProvider, constants.ActionDeleted, name)
+
+	return nil
 }

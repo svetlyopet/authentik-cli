@@ -13,12 +13,13 @@ import (
 )
 
 const (
-	coreUsersPath              = "%s/api/v3/core/users/"
-	coreUsersPathUpdateDelete  = "%s/api/v3/core/users/%s/"
-	coreGroupsPath             = "%s/api/v3/core/groups/"
-	coreGroupsPathUpdateDelete = "%s/api/v3/core/groups/%s/"
-	coreGroupsAddUserPath      = "%s/api/v3/core/groups/%s/add_user/"
-	coreApplicationsPath       = "%s/api/v3/core/applications/"
+	coreUsersPath                    = "%s/api/v3/core/users/"
+	coreUsersPathUpdateDelete        = "%s/api/v3/core/users/%s/"
+	coreGroupsPath                   = "%s/api/v3/core/groups/"
+	coreGroupsPathUpdateDelete       = "%s/api/v3/core/groups/%s/"
+	coreGroupsAddUserPath            = "%s/api/v3/core/groups/%s/add_user/"
+	coreApplicationsPath             = "%s/api/v3/core/applications/"
+	coreApplicationsUpdateDeletePath = "%s/api/v3/core/applications/%s/"
 )
 
 func (a *authentik) CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
@@ -194,7 +195,7 @@ func (a *authentik) GetUserByUsername(username string) (*ak.User, error) {
 	}
 
 	if len(userResp.Results) == 0 {
-		return nil, nil
+		return nil, customErrors.NewNotExists("user not found")
 	}
 
 	if len(userResp.Results) > 1 {
@@ -252,6 +253,49 @@ func (a *authentik) CreateApplication(name, slug string, providerPK int) (*ak.Ap
 	return mapToCreateOrUpdateApplicationResponse(&createApplicationResp), nil
 }
 
-func GetFlows() ([]ak.Flow, error) {
-	return nil, nil
+func (a *authentik) GetApplicationByName(name string) (*ak.Application, error) {
+	params := url.Values{}
+	params.Add("search", name)
+
+	response, err := a.doRequestWithQuery(http.MethodGet, fmt.Sprintf(coreApplicationsPath, a.url), nil, &params)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get application: %s", string(errBody)))
+	}
+
+	var getApplicationsResp getApplicationsResponse
+	err = json.NewDecoder(response.Body).Decode(&getApplicationsResp)
+	if err != nil {
+		return nil, err
+	}
+
+	if len(getApplicationsResp.Results) == 0 {
+		return nil, customErrors.NewNotExists("application not found")
+	}
+
+	if len(getApplicationsResp.Results) > 1 {
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("found more than 1 application while searching for %s", name))
+	}
+
+	return mapToGetApplicationsByNameResponse(&getApplicationsResp), nil
+}
+
+func (a *authentik) DeleteApplication(slug string) error {
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreApplicationsUpdateDeletePath, a.url, slug), nil)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusNoContent {
+		errBody, _ := io.ReadAll(response.Body)
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete application: %s", string(errBody)))
+	}
+
+	return nil
 }

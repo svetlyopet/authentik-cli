@@ -12,7 +12,9 @@ import (
 )
 
 const (
-	providersOAuth2Path = "%s/api/v3/providers/oauth2/"
+	providersOAuth2Path    = "%s/api/v3/providers/oauth2/"
+	providersAllPath       = "%s/api/v3/providers/all/"
+	providersAllDeletePath = "%s/api/v3/providers/all/%d/"
 )
 
 func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcProvider, error) {
@@ -66,4 +68,19 @@ func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcPr
 	}
 
 	return mapToCreateOrUpdateProviderResponse(&oidcProvidersResp), nil
+}
+
+func (a *authentik) DeleteProvider(id int) error {
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(providersAllDeletePath, a.url, id), nil)
+	if err != nil {
+		return err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusNoContent {
+		errBody, _ := io.ReadAll(response.Body)
+		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete provider: %s", string(errBody)))
+	}
+
+	return nil
 }

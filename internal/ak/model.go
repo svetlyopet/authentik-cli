@@ -60,10 +60,11 @@ type OidcRedirectUri struct {
 }
 
 type Application struct {
-	PK       string
-	Name     string
-	Slug     string
-	Provider int
+	PK           string
+	Name         string
+	Slug         string
+	ProviderPK   int
+	ProviderName string
 }
 
 type Flow struct {
