@@ -51,7 +51,7 @@ func initConfig() {
 		homeDir, err := os.UserHomeDir()
 		cobra.CheckErr(err)
 
-		// Search config in home directory with name ".authentik-cli" (without extension).
+		// Search config in home directory
 		viper.AddConfigPath(homeDir)
 		viper.SetConfigType("yaml")
 		viper.SetConfigName(constants.CfgFilename)
@@ -60,10 +60,7 @@ func initConfig() {
 	viper.AutomaticEnv() // read in environment variables that match
 
 	// If a config file is found, read it in.
-	if err := viper.ReadInConfig(); err != nil {
-		fmt.Println("No config file found. Run the config command to set a target.")
-		os.Exit(1)
-	}
+	_ = viper.ReadInConfig()
 
 	authentikUrl := viper.GetString("url")
 	authentikToken := viper.GetString("token")

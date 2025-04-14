@@ -9,6 +9,7 @@ import (
 	"net/url"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
 
 type authentik struct {
@@ -39,7 +40,7 @@ func (a *authentik) doRequestWithQuery(method, url string, body io.Reader, value
 
 	req.Header.Add("Authorization", fmt.Sprintf("Bearer %s", a.token))
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("User-Agent", "authentik-cli; go-http-client/1.1")
+	req.Header.Add("User-Agent", fmt.Sprintf("%s; go-http-client/1.1", constants.CmdName))
 
 	if values != nil {
 		req.URL.RawQuery = values.Encode()

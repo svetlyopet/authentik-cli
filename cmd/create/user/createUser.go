@@ -47,12 +47,6 @@ Examples:
 		os.Exit(1)
 	}
 
-	err = c.MarkFlagRequired("surname")
-	if err != nil {
-		fmt.Printf("%v", err)
-		os.Exit(1)
-	}
-
 	err = c.MarkFlagRequired("email")
 	if err != nil {
 		fmt.Printf("%v", err)

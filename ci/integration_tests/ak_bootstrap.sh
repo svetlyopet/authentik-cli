@@ -2,7 +2,8 @@
 
 set +eo pipefail
 
-: ${AUTHENTIK_TAG:="2025.2.3"}
+: ${AUTHENTIK_TAG:="2025.2.4"}
+: ${AUTHENTIK_URL:"http://localhost"
 
 AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')
 AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')
@@ -24,6 +25,7 @@ generate_env() {
     rm $CI_TEST_DIR/.env
   fi
 
+  echo "AUTHENTIK_URL=$AUTHENTIK_URL" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_TAG=$AUTHENTIK_TAG" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_SECRET_KEY=$AUTHENTIK_SECRET_KEY" >> $CI_TEST_DIR/.env
   echo "AUTHENTIK_BOOTSTRAP_TOKEN=$AUTHENTIK_BOOTSTRAP_TOKEN" >> $CI_TEST_DIR/.env
