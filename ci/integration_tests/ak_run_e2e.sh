@@ -21,6 +21,8 @@ TEST_USER_NAME="example-user"
 TEST_GROUP_NAME="example-group"
 TEST_OIDC_APP_NAME="example-app"
 
+source $CI_ENV_FILE
+
 build_ak_bin() {
   echo -n "Building binary... "
   export GOARCH=$GO_ARCH
@@ -31,7 +33,6 @@ build_ak_bin() {
 
 create_config() {
   echo -n "Creating config... "
-  source $CI_ENV_FILE
   $AK_CLI_BIN config 1&>/dev/null <<STDIN
 $AUTHENTIK_URL
 $AUTHENTIK_BOOTSTRAP_TOKEN
@@ -42,55 +43,58 @@ STDIN
 }
 
 create_tenant() {
-  TEST_NAME="Create tenant"
-  test_start "$TEST_NAME"
+  local test_name="Create tenant"
+  test_start "$test_name"
   $AK_CLI_BIN create tenant $TEST_TENANT_NAME
-  test_passed "$TEST_NAME"
+  test_passed "$test_name"
 }
 
 create_admin_user_for_tenant() {
-  TEST_NAME="Create admin user for tenant"
-  test_start "$TEST_NAME"
+  local test_name="Create admin user for tenant"
+  test_start "$test_name"
   $AK_CLI_BIN create user $TEST_USER_NAME \
   --name=$TEST_USER_NAME \
   --email=$TEST_USER_NAME@example.com \
   --tenant-admin=$TEST_TENANT_NAME
-  test_passed "$TEST_NAME"
+  test_passed "$test_name"
 }
 
 create_group() {
-  TEST_NAME="Create group"
-  test_start "$TEST_NAME"
+  local test_name="Create group"
+  test_start "$test_name"
   $AK_CLI_BIN create group $TEST_GROUP_NAME
-  test_passed "$TEST_NAME"
+  test_passed "$test_name"
 }
 
 delete_group() {
-  TEST_NAME="Delete group"
-  test_start "$TEST_NAME"
+  local test_name="Delete group"
+  test_start "$test_name"
   $AK_CLI_BIN delete group $TEST_GROUP_NAME
-  test_passed "$TEST_NAME"
+  test_passed "$test_name"
 }
 
 delete_user() {
-  TEST_NAME="Delete user"
-  test_start "$TEST_NAME"
+  local test_name="Delete user"
+  test_start "$test_name"
   $AK_CLI_BIN delete user $TEST_USER_NAME
-  test_passed "$TEST_NAME"
+  test_passed "$test_name"
 }
 
 delete_tenant() {
-  TEST_NAME="Delete tenant"
-  test_start "$TEST_NAME"
+  local test_name="Delete tenant"
+  test_start "$test_name"
   $AK_CLI_BIN delete tenant $TEST_TENANT_NAME
-  test_passed "$TEST_NAME"
+  test_passed "$test_name"
 }
 
 
 cleanup() {
   echo "Cleaning up..."
-  echo -n "rm " && rm -v $HOME/.authentik-cli
+  if [ -f $HOME/.authentik-cli  ]; then
+    echo -n "rm " && rm -v $HOME/.authentik-cli
+  fi
 }
+trap cleanup EXIT
 
 test_start() {
   echo "Test case: $1"
@@ -100,7 +104,34 @@ test_passed() {
   echo -e "$1 ${GREEN}PASSED${ENDCOLOR}\n"
 }
 
+check_authentik_status() {
+  local preflight=""
+  local max_retries=10
+  local retry_count=0
+  local retry_interval=2
+
+  echo "Checking Authentik target health... "
+
+  while [[ $retry_count -lt $max_retries ]]; do
+    response_code=$(curl -s -o /dev/null -w "%{http_code}" "${AUTHENTIK_URL}/-/health/ready/")
+
+    if [[ $response_code -eq 200 ]]; then
+      echo -e "Authentik is ${GREEN}up and running${ENDCOLOR} at $AUTHENTIK_URL"
+      echo
+      return 0
+    else
+      echo -e "${YELLOW}Authentik is not ready. Retrying in $retry_interval seconds...${ENDCOLOR}"
+      sleep $retry_interval
+      retry_count=$((retry_count + 1))
+    fi
+  done
+
+  echo -e "${RED}Authentik is not ready after $max_retries retries. Aborting...${ENDCOLOR}"
+  return 1
+}
+
 main() {
+  check_authentik_status
   build_ak_bin
   create_config
   create_tenant
@@ -109,7 +140,6 @@ main() {
   delete_group
   delete_user
   delete_tenant
-  cleanup
 }
 
 main "$@"

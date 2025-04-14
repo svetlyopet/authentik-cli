@@ -16,3 +16,10 @@ Removes the Docker resources created by this script.
 ```bash
 ./ci/integration_tests/ak_bootstrap.sh destroy
 ```
+
+## Run e2e tests
+Runs the e2e tests against the local Authentik instance
+
+```bash
+./ci/integration_tests/ak_run_e2e.sh
+```
