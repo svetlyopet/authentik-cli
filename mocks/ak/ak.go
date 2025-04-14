@@ -67,6 +67,21 @@ func (mr *MockAuthentikRepositoryMockRecorder) AssignViewPermissionsToTenantRole
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignViewPermissionsToTenantRole", reflect.TypeOf((*MockAuthentikRepository)(nil).AssignViewPermissionsToTenantRole), rolePK)
 }
 
+// CreateApplication mocks base method.
+func (m *MockAuthentikRepository) CreateApplication(name, slug string, providerPK int) (*ak.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateApplication", name, slug, providerPK)
+	ret0, _ := ret[0].(*ak.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateApplication indicates an expected call of CreateApplication.
+func (mr *MockAuthentikRepositoryMockRecorder) CreateApplication(name, slug, providerPK any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApplication", reflect.TypeOf((*MockAuthentikRepository)(nil).CreateApplication), name, slug, providerPK)
+}
+
 // CreateGroup mocks base method.
 func (m *MockAuthentikRepository) CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
 	m.ctrl.T.Helper()
@@ -80,6 +95,21 @@ func (m *MockAuthentikRepository) CreateGroup(name string, roles []string, attri
 func (mr *MockAuthentikRepositoryMockRecorder) CreateGroup(name, roles, attributes any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGroup", reflect.TypeOf((*MockAuthentikRepository)(nil).CreateGroup), name, roles, attributes)
+}
+
+// CreateOidcProvider mocks base method.
+func (m *MockAuthentikRepository) CreateOidcProvider(provider ak.OidcProvider) (*ak.OidcProvider, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOidcProvider", provider)
+	ret0, _ := ret[0].(*ak.OidcProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateOidcProvider indicates an expected call of CreateOidcProvider.
+func (mr *MockAuthentikRepositoryMockRecorder) CreateOidcProvider(provider any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOidcProvider", reflect.TypeOf((*MockAuthentikRepository)(nil).CreateOidcProvider), provider)
 }
 
 // CreateRole mocks base method.
@@ -112,6 +142,20 @@ func (mr *MockAuthentikRepositoryMockRecorder) CreateUser(usr any) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockAuthentikRepository)(nil).CreateUser), usr)
 }
 
+// DeleteApplication mocks base method.
+func (m *MockAuthentikRepository) DeleteApplication(slug string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteApplication", slug)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteApplication indicates an expected call of DeleteApplication.
+func (mr *MockAuthentikRepositoryMockRecorder) DeleteApplication(slug any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockAuthentikRepository)(nil).DeleteApplication), slug)
+}
+
 // DeleteGroup mocks base method.
 func (m *MockAuthentikRepository) DeleteGroup(uuid string) error {
 	m.ctrl.T.Helper()
@@ -124,6 +168,20 @@ func (m *MockAuthentikRepository) DeleteGroup(uuid string) error {
 func (mr *MockAuthentikRepositoryMockRecorder) DeleteGroup(uuid any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGroup", reflect.TypeOf((*MockAuthentikRepository)(nil).DeleteGroup), uuid)
+}
+
+// DeleteProvider mocks base method.
+func (m *MockAuthentikRepository) DeleteProvider(pk int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteProvider", pk)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteProvider indicates an expected call of DeleteProvider.
+func (mr *MockAuthentikRepositoryMockRecorder) DeleteProvider(pk any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProvider", reflect.TypeOf((*MockAuthentikRepository)(nil).DeleteProvider), pk)
 }
 
 // DeleteRole mocks base method.
@@ -152,6 +210,36 @@ func (m *MockAuthentikRepository) DeleteUser(userPK string) error {
 func (mr *MockAuthentikRepositoryMockRecorder) DeleteUser(userPK any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockAuthentikRepository)(nil).DeleteUser), userPK)
+}
+
+// GetApplicationByName mocks base method.
+func (m *MockAuthentikRepository) GetApplicationByName(name string) (*ak.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetApplicationByName", name)
+	ret0, _ := ret[0].(*ak.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetApplicationByName indicates an expected call of GetApplicationByName.
+func (mr *MockAuthentikRepositoryMockRecorder) GetApplicationByName(name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationByName", reflect.TypeOf((*MockAuthentikRepository)(nil).GetApplicationByName), name)
+}
+
+// GetFlows mocks base method.
+func (m *MockAuthentikRepository) GetFlows() ([]ak.Flow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFlows")
+	ret0, _ := ret[0].([]ak.Flow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFlows indicates an expected call of GetFlows.
+func (mr *MockAuthentikRepositoryMockRecorder) GetFlows() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlows", reflect.TypeOf((*MockAuthentikRepository)(nil).GetFlows))
 }
 
 // GetGroupByName mocks base method.
