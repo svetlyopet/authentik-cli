@@ -33,6 +33,10 @@ func (a *authentik) doRequest(method, url string, body io.Reader) (*http.Respons
 }
 
 func (a *authentik) doRequestWithQuery(method, url string, body io.Reader, values *url.Values) (*http.Response, error) {
+	if err := a.preflightCheck(); err != nil {
+		return nil, err
+	}
+
 	req, err := http.NewRequest(method, url, body)
 	if err != nil {
 		return nil, err
@@ -52,4 +56,12 @@ func (a *authentik) doRequestWithQuery(method, url string, body io.Reader, value
 	}
 
 	return response, nil
+}
+
+func (a *authentik) preflightCheck() error {
+	if a.url == "" || a.token == "" {
+		return fmt.Errorf("URL and token for an authentik target are not set.\n Hint: run the %s config command first", constants.CmdName)
+	}
+
+	return nil
 }

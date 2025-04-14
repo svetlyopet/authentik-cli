@@ -105,7 +105,6 @@ test_passed() {
 }
 
 check_authentik_status() {
-  local preflight=""
   local max_retries=10
   local retry_count=0
   local retry_interval=2
