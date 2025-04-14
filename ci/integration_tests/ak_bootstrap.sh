@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-set -e +o pipefail
+set -eo pipefail
 
 : ${AUTHENTIK_TAG:="2025.2.4"}
-: ${AUTHENTIK_URL:"http://localhost"
+: ${AUTHENTIK_URL:="http://localhost:9000"}
 
 AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')
 AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')
@@ -36,7 +36,7 @@ generate_env() {
 
 compose() {
   docker compose -f $CI_TEST_DIR/docker-compose.yml up -d
-  echo "login link: http://localhost:9000"
+  echo "login link: $AUTHENTIK_URL"
   echo "user: akadmin"
   echo "password: $AUTHENTIK_BOOTSTRAP_PASSWORD"
   echo "api-token: $AUTHENTIK_BOOTSTRAP_TOKEN"
