@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set +eo pipefail
+set -e +o pipefail
 
 : ${AUTHENTIK_TAG:="2025.2.4"}
 : ${AUTHENTIK_URL:"http://localhost"

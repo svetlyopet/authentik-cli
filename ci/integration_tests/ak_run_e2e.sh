@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set +eo pipefail
+set -e +o pipefail
 
 GO_BIN=$(which go)
 GO_ARCH=$(uname -m)
@@ -29,26 +29,30 @@ STDIN
 }
 
 create_tenant() {
-  echo "============== Create tenant ==============="
+  echo "Test case: Create tenant"
   $AK_CLI_BIN create tenant $TEST_TENANT_NAME
+  echo
 }
 
 create_admin_user_for_tenant() {
-  echo "====== Create admin user for tenant ========"
+  echo "Test case: Create admin user for tenant"
   $AK_CLI_BIN create user $TEST_USER_NAME \
   --name=$TEST_USER_NAME \
   --email=$TEST_USER_NAME@example.com \
   --tenant-admin=$TEST_TENANT_NAME
+  echo
 }
 
 delete_user() {
-  echo "=============== Delete user ================"
+  echo "Test case: Delete user"
   $AK_CLI_BIN delete user $TEST_USER_NAME
+  echo
 }
 
 delete_tenant() {
-  echo "============== Delete tenant ==============="
+  echo "Test case: Delete tenant"
   $AK_CLI_BIN delete tenant $TEST_TENANT_NAME
+  echo
 }
 
 main() {
