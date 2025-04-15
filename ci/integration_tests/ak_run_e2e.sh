@@ -93,6 +93,10 @@ cleanup() {
   if [ -f $HOME/.authentik-cli  ]; then
     echo -n "rm " && rm -v $HOME/.authentik-cli
   fi
+
+  if [ -f $AK_CLI_BIN  ]; then
+    echo -n "rm " && rm -v $AK_CLI_BIN
+  fi
 }
 trap cleanup EXIT
 
