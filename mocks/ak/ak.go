@@ -227,6 +227,20 @@ func (mr *MockAuthentikRepositoryMockRecorder) GetApplicationByName(name any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationByName", reflect.TypeOf((*MockAuthentikRepository)(nil).GetApplicationByName), name)
 }
 
+// GetAuthentikTargetUrl mocks base method.
+func (m *MockAuthentikRepository) GetAuthentikTargetUrl() string {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAuthentikTargetUrl")
+	ret0, _ := ret[0].(string)
+	return ret0
+}
+
+// GetAuthentikTargetUrl indicates an expected call of GetAuthentikTargetUrl.
+func (mr *MockAuthentikRepositoryMockRecorder) GetAuthentikTargetUrl() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAuthentikTargetUrl", reflect.TypeOf((*MockAuthentikRepository)(nil).GetAuthentikTargetUrl))
+}
+
 // GetFlows mocks base method.
 func (m *MockAuthentikRepository) GetFlows() ([]ak.Flow, error) {
 	m.ctrl.T.Helper()
@@ -255,6 +269,21 @@ func (m *MockAuthentikRepository) GetGroupByName(name string) (*ak.Group, error)
 func (mr *MockAuthentikRepositoryMockRecorder) GetGroupByName(name any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupByName", reflect.TypeOf((*MockAuthentikRepository)(nil).GetGroupByName), name)
+}
+
+// GetOidcProvider mocks base method.
+func (m *MockAuthentikRepository) GetOidcProvider(pk int) (*ak.OidcProvider, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOidcProvider", pk)
+	ret0, _ := ret[0].(*ak.OidcProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOidcProvider indicates an expected call of GetOidcProvider.
+func (mr *MockAuthentikRepositoryMockRecorder) GetOidcProvider(pk any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOidcProvider", reflect.TypeOf((*MockAuthentikRepository)(nil).GetOidcProvider), pk)
 }
 
 // GetRoleByName mocks base method.
