@@ -59,6 +59,9 @@ func createApp(name, providerType string) (err error) {
 	switch providerType {
 	case "oidc":
 		err = app.CreateOidc(name, slug, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUris)
+		if err != nil {
+			return err
+		}
 	case "ldap":
 		return fmt.Errorf("LDAP provider is not supported yet")
 	case "saml":
