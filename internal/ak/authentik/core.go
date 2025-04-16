@@ -51,7 +51,7 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes ak.Group
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create group: %s", string(errBody)))
 	}
 
-	var createGroupResp createOrUpdateGroupResponse
+	var createGroupResp getGroupResponse
 	err = json.NewDecoder(response.Body).Decode(&createGroupResp)
 	if err != nil {
 		return nil, err
@@ -136,7 +136,7 @@ func (a *authentik) CreateUser(usr ak.User) (*ak.User, error) {
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create user: %s", errBody))
 	}
 
-	var userResp createOrUpdateUserResponse
+	var userResp getUserResponse
 	err = json.NewDecoder(response.Body).Decode(&userResp)
 	if err != nil {
 		return nil, err
@@ -188,20 +188,20 @@ func (a *authentik) GetUserByUsername(username string) (*ak.User, error) {
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get user by username: %s", errBody))
 	}
 
-	var userResp getUserResponse
-	err = json.NewDecoder(response.Body).Decode(&userResp)
+	var usersResp getUsersResponse
+	err = json.NewDecoder(response.Body).Decode(&usersResp)
 	if err != nil {
 		return nil, err
 	}
 
-	if len(userResp.Results) == 0 {
+	if len(usersResp.Results) == 0 {
 		return nil, customErrors.NewNotExists("user not found")
 	}
 
-	if len(userResp.Results) > 1 {
+	if len(usersResp.Results) > 1 {
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("found more than 1 user while searching for %s", username))
 	}
-	return mapToUserGetResponse(&userResp), nil
+	return mapToUsersGetResponse(&usersResp), nil
 }
 
 func (a *authentik) DeleteUser(userPK string) error {
@@ -244,7 +244,7 @@ func (a *authentik) CreateApplication(name, slug string, providerPK int) (*ak.Ap
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create application: %s", string(errBody)))
 	}
 
-	var createApplicationResp createOrUpdateApplicationResponse
+	var createApplicationResp getApplicationResponse
 	err = json.NewDecoder(response.Body).Decode(&createApplicationResp)
 	if err != nil {
 		return nil, err
@@ -291,6 +291,10 @@ func (a *authentik) DeleteApplication(slug string) error {
 		return err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode == http.StatusNotFound {
+		return customErrors.NewNotExists("application not found")
+	}
 
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)

@@ -56,6 +56,7 @@ type baseProvider struct {
 	Name                               string   `json:"name"  binding:"required"`
 	AuthenticationFlow                 string   `json:"authentication_flow"  binding:"required"`
 	AuthorizationFlow                  string   `json:"authorization_flow"  binding:"required"`
+	InvalidationFlow                   string   `json:"invalidation_flow"  binding:"required"`
 	PropertyMappings                   []string `json:"property_mappings"  binding:"required"`
 	Component                          string   `json:"component"  binding:"required"`
 	AssignedApplicationSlug            string   `json:"assigned_application_slug"  binding:"required"`
@@ -125,7 +126,7 @@ type createRoleRequest struct {
 	Name string `json:"name" binding:"required"`
 }
 
-type createOrUpdateRoleResponse struct {
+type getRoleResponse struct {
 	roleObj
 }
 
@@ -143,7 +144,7 @@ type createGroupRequest struct {
 	Roles       []string        `json:"roles,omitempty"`
 }
 
-type createOrUpdateGroupResponse struct {
+type getGroupResponse struct {
 	groupsObj
 }
 
@@ -165,7 +166,7 @@ type createUserRequest struct {
 	Attributes userAttributes `json:"attributes"`
 }
 
-type createOrUpdateUserResponse struct {
+type getUserResponse struct {
 	userObj
 }
 
@@ -173,7 +174,7 @@ type groupUserAddRequest struct {
 	PK string `json:"pk" binding:"required"`
 }
 
-type getUserResponse struct {
+type getUsersResponse struct {
 	Pagination pagination `json:"pagination" binding:"required"`
 	Results    []userObj  `json:"results" binding:"required"`
 }
@@ -203,7 +204,7 @@ type oidcRedirectUri struct {
 	Url          string `json:"url" binding:"required"`
 }
 
-type createOrUpdateOidcProviderResponse struct {
+type getOidcProviderResponse struct {
 	oidcProvider
 }
 
@@ -219,7 +220,7 @@ type createOrUpdateApplicationRequest struct {
 	Group                string `json:"group,omitempty"`
 }
 
-type createOrUpdateApplicationResponse struct {
+type getApplicationResponse struct {
 	application
 }
 

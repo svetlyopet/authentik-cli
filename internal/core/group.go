@@ -15,7 +15,7 @@ func CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*a
 		return nil, err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeGroup, constants.ActionCreated, name)
+	logger.LogObjectChange(constants.ObjectTypeGroup, constants.ActionCreated, name)
 
 	return group, nil
 }
@@ -44,7 +44,7 @@ func DeleteGroup(name string) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeGroup, constants.ActionDeleted, name)
+	logger.LogObjectChange(constants.ObjectTypeGroup, constants.ActionDeleted, name)
 
 	return nil
 }
@@ -55,7 +55,7 @@ func AddUserToGroup(userPK int, groupPK, groupName string) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeGroup, constants.ActionChanged, groupName)
+	logger.LogObjectChange(constants.ObjectTypeGroup, constants.ActionChanged, groupName)
 
 	return nil
 }

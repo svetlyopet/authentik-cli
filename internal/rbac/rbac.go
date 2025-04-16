@@ -19,7 +19,7 @@ func CreateRole(name string) (role *ak.Role, err error) {
 		return nil, err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeRole, constants.ActionCreated, name)
+	logger.LogObjectChange(constants.ObjectTypeRole, constants.ActionCreated, name)
 
 	return role, nil
 }
@@ -47,7 +47,7 @@ func DeleteRole(name string) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeRole, constants.ActionDeleted, name)
+	logger.LogObjectChange(constants.ObjectTypeRole, constants.ActionDeleted, name)
 
 	return nil
 }

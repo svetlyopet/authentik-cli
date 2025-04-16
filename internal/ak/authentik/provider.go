@@ -12,9 +12,10 @@ import (
 )
 
 const (
-	providersOAuth2Path    = "%s/api/v3/providers/oauth2/"
-	providersAllPath       = "%s/api/v3/providers/all/"
-	providersAllDeletePath = "%s/api/v3/providers/all/%d/"
+	providersOAuth2Path             = "%s/api/v3/providers/oauth2/"
+	providersOAuth2UpdateDeletePath = "%s/api/v3/providers/oauth2/%d/"
+	providersAllPath                = "%s/api/v3/providers/all/"
+	providersAllDeletePath          = "%s/api/v3/providers/all/%d/"
 )
 
 func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcProvider, error) {
@@ -61,21 +62,25 @@ func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcPr
 		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create oidc provider: %s", string(errBody)))
 	}
 
-	var oidcProvidersResp createOrUpdateOidcProviderResponse
+	var oidcProvidersResp getOidcProviderResponse
 	err = json.NewDecoder(response.Body).Decode(&oidcProvidersResp)
 	if err != nil {
 		return nil, err
 	}
 
-	return mapToCreateOrUpdateProviderResponse(&oidcProvidersResp), nil
+	return mapToGetOidcProviderResponse(a.url, &oidcProvidersResp), nil
 }
 
 func (a *authentik) DeleteProvider(id int) error {
-	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(providersAllDeletePath, a.url, id), nil)
+	response, err := a.doRequest(http.MethodGet, fmt.Sprintf(providersAllDeletePath, a.url, id), nil)
 	if err != nil {
 		return err
 	}
 	defer response.Body.Close()
+
+	if response.StatusCode == http.StatusNotFound {
+		return customErrors.NewNotExists("provider not found")
+	}
 
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
@@ -83,4 +88,29 @@ func (a *authentik) DeleteProvider(id int) error {
 	}
 
 	return nil
+}
+
+func (a *authentik) GetOidcProvider(id int) (*ak.OidcProvider, error) {
+	response, err := a.doRequest(http.MethodGet, fmt.Sprintf(providersOAuth2UpdateDeletePath, a.url, id), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode == http.StatusNotFound {
+		return nil, customErrors.NewNotExists("provider not found")
+	}
+
+	if response.StatusCode != http.StatusOK {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get oidc provider: %s", string(errBody)))
+	}
+
+	var getOidcProviderResp getOidcProviderResponse
+	err = json.NewDecoder(response.Body).Decode(&getOidcProviderResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapToGetOidcProviderResponse(a.url, &getOidcProviderResp), nil
 }

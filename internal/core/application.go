@@ -20,7 +20,7 @@ func CreateApplication(name, slug string, providerPK int) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeApplication, constants.ActionCreated, name)
+	logger.LogObjectChange(constants.ObjectTypeApplication, constants.ActionCreated, name)
 
 	return nil
 }
@@ -44,7 +44,7 @@ func DeleteApplication(name, slug string) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeApplication, constants.ActionDeleted, name)
+	logger.LogObjectChange(constants.ObjectTypeApplication, constants.ActionDeleted, name)
 
 	return nil
 }

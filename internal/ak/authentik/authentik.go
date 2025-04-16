@@ -65,3 +65,7 @@ func (a *authentik) preflightCheck() error {
 
 	return nil
 }
+
+func (a *authentik) GetAuthentikTargetUrl() string {
+	return a.url
+}

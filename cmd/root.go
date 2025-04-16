@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/viper"
 	c "github.com/svetlyopet/authentik-cli/cmd/create"
 	d "github.com/svetlyopet/authentik-cli/cmd/delete"
+	g "github.com/svetlyopet/authentik-cli/cmd/get"
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/ak/authentik"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
@@ -41,6 +42,7 @@ func addSubcommands() {
 	rootCmd.AddCommand(configCmd())
 	rootCmd.AddCommand(c.CreateCmd())
 	rootCmd.AddCommand(d.DeleteCmd())
+	rootCmd.AddCommand(g.GetCmd())
 }
 
 func initConfig() {

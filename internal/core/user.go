@@ -43,7 +43,7 @@ func CreateUser(username, name, surname, email, tenant string) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeUser, constants.ActionCreated, username)
+	logger.LogObjectChange(constants.ObjectTypeUser, constants.ActionCreated, username)
 
 	if tenant != "" {
 		err = AddUserToGroup(user.PK, tenantGroup.PK, tenantGroup.Name)
@@ -69,7 +69,7 @@ func DeleteUser(username string) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeUser, constants.ActionDeleted, username)
+	logger.LogObjectChange(constants.ObjectTypeUser, constants.ActionDeleted, username)
 
 	return nil
 }

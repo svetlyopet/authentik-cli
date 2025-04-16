@@ -79,7 +79,7 @@ func Test_CreateGroup(t *testing.T) {
 			createGroupResponse: createGroupResponse{
 				StatusCode: http.StatusCreated,
 				Content: (func() []byte {
-					marshal, _ := json.Marshal(createOrUpdateGroupResponse{groupsObj{
+					marshal, _ := json.Marshal(getGroupResponse{groupsObj{
 						PK:         "random-uuid",
 						Name:       "example-group",
 						Attributes: groupAttributes{},
@@ -238,7 +238,7 @@ func Test_CreateUser(t *testing.T) {
 			createUserResponse: createUserResponse{
 				StatusCode: http.StatusCreated,
 				Content: (func() []byte {
-					marshal, _ := json.Marshal(createOrUpdateUserResponse{userObj{
+					marshal, _ := json.Marshal(getUserResponse{userObj{
 						PK:         999,
 						Username:   "johndoe",
 						Name:       "John Doe",

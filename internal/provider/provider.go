@@ -66,7 +66,7 @@ func CreateOidcProvider(name, oidcClientType, oidcConsentType string, oidcEncryp
 		return nil, err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeProvider, constants.ActionCreated, name)
+	logger.LogObjectChange(constants.ObjectTypeProvider, constants.ActionCreated, name)
 
 	return provider, nil
 }
@@ -81,7 +81,20 @@ func DeleteProvider(name string, pk int) (err error) {
 		return err
 	}
 
-	logger.WriteStdout(constants.ObjectTypeProvider, constants.ActionDeleted, name)
+	logger.LogObjectChange(constants.ObjectTypeProvider, constants.ActionDeleted, name)
 
 	return nil
+}
+
+func GetOidcProvider(pk int) (provider *ak.OidcProvider, err error) {
+	provider, err = ak.Repo.GetOidcProvider(pk)
+	if err != nil {
+		var notExistsError *customErrors.NotExists
+		if errors.As(err, &notExistsError) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	return provider, nil
 }

@@ -65,7 +65,7 @@ func Test_CreateRole(t *testing.T) {
 			createRoleResponse: createRoleResponse{
 				StatusCode: http.StatusCreated,
 				Content: (func() []byte {
-					marshal, _ := json.Marshal(createOrUpdateRoleResponse{roleObj{
+					marshal, _ := json.Marshal(getRoleResponse{roleObj{
 						PK:   "random-uuid",
 						Name: "example-role",
 					}})

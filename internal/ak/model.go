@@ -64,6 +64,7 @@ type Application struct {
 	Name         string
 	Slug         string
 	ProviderPK   int
+	ProviderType string
 	ProviderName string
 }
 

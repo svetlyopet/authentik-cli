@@ -5,9 +5,8 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
+	"github.com/svetlyopet/authentik-cli/internal/app"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
-	"github.com/svetlyopet/authentik-cli/internal/core"
-	"github.com/svetlyopet/authentik-cli/internal/provider"
 )
 
 var slug string
@@ -56,29 +55,22 @@ Examples:
 	return c
 }
 
-func createApp(name, providerType string) error {
-	var providerPK int
-
+func createApp(name, providerType string) (err error) {
 	switch providerType {
 	case "oidc":
-		p, err := provider.CreateOidcProvider(name, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUris)
-		if err != nil {
-			return err
-		}
-		providerPK = p.PK
+		err = app.CreateOidc(name, slug, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUris)
 	case "ldap":
 		return fmt.Errorf("LDAP provider is not supported yet")
 	case "saml":
 		return fmt.Errorf("SAML provider is not supported yet")
 	case "proxy":
 		return fmt.Errorf("Proxy provider is not supported yet")
+	case "rac":
+		return fmt.Errorf("RAC provider is not supported yet")
+	case "scim":
+		return fmt.Errorf("SCIM provider is not supported yet")
 	default:
 		return fmt.Errorf("%s is not a supported provider type", providerType)
-	}
-
-	err := core.CreateApplication(name, slug, providerPK)
-	if err != nil {
-		return err
 	}
 
 	return nil

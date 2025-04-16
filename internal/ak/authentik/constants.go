@@ -10,3 +10,12 @@ const (
 	ViewProviderPerm         = "authentik_core.view_provider"
 	ViewEventPerm            = "authentik_events.view_event"
 )
+
+const (
+	ProviderTypeMetaModelLDAP  = "authentik_providers_ldap.ldapprovider"
+	ProviderTypeMetaModelOIDC  = "authentik_providers_oauth2.oauth2provider"
+	ProviderTypeMetaModelProxy = "authentik_providers_proxy.proxyprovider"
+	ProviderTypeMetaModelRAC   = "authentik_providers_rac.racprovider"
+	ProviderTypeMetaModelSAML  = "authentik_providers_saml.samlprovider"
+	ProviderTypeMetaModelSCIM  = "authentik_providers_scim.scimprovider"
+)

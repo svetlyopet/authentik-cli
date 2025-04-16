@@ -3,6 +3,7 @@ package ak
 var Repo AuthentikRepository
 
 type AuthentikRepository interface {
+	GetAuthentikTargetUrl() string
 	CreateRole(name string) (*Role, error)
 	GetRoleByName(name string) (*Role, error)
 	DeleteRole(uuid string) error
@@ -20,4 +21,5 @@ type AuthentikRepository interface {
 	GetApplicationByName(name string) (*Application, error)
 	DeleteApplication(slug string) error
 	DeleteProvider(pk int) error
+	GetOidcProvider(pk int) (*OidcProvider, error)
 }

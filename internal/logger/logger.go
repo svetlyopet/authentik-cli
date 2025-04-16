@@ -4,6 +4,10 @@ import (
 	"fmt"
 )
 
-func WriteStdout(targetObjectType, action, targetObjectName string) {
+func LogObjectChange(targetObjectType, action, targetObjectName string) {
 	fmt.Printf("%s/%s %s\n", targetObjectType, targetObjectName, action)
+}
+
+func LogObjectDetails(resourceData []byte) {
+	fmt.Printf("%s", string(resourceData))
 }

@@ -2,9 +2,10 @@ package authentik
 
 import (
 	"github.com/svetlyopet/authentik-cli/internal/ak"
+	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
 
-func mapToCreateOrUpdateRoleResponse(role *createOrUpdateRoleResponse) *ak.Role {
+func mapToCreateOrUpdateRoleResponse(role *getRoleResponse) *ak.Role {
 	return &ak.Role{
 		PK:   role.PK,
 		Name: role.Name,
@@ -23,7 +24,7 @@ func mapToGetRoleByNameResponse(roles *getRolesResponse) *ak.Role {
 	return res
 }
 
-func mapToCreateOrUpdateGroupResponse(group *createOrUpdateGroupResponse) *ak.Group {
+func mapToCreateOrUpdateGroupResponse(group *getGroupResponse) *ak.Group {
 	return &ak.Group{
 		PK:   group.PK,
 		Name: group.Name,
@@ -48,7 +49,7 @@ func mapToGetGroupByNameResponse(roles *getGroupsResponse) *ak.Group {
 	return res
 }
 
-func mapToCreateOrUpdateUserResponse(user *createOrUpdateUserResponse) *ak.User {
+func mapToCreateOrUpdateUserResponse(user *getUserResponse) *ak.User {
 	return &ak.User{
 		PK:       user.PK,
 		Username: user.Username,
@@ -63,10 +64,10 @@ func mapToCreateOrUpdateUserResponse(user *createOrUpdateUserResponse) *ak.User 
 	}
 }
 
-func mapToUserGetResponse(user *getUserResponse) *ak.User {
+func mapToUsersGetResponse(users *getUsersResponse) *ak.User {
 	var userGetResponse ak.User
 
-	for _, userResults := range user.Results {
+	for _, userResults := range users.Results {
 		userGetResponse.PK = userResults.PK
 		userGetResponse.Username = userResults.Username
 		userGetResponse.Name = userResults.Name
@@ -79,7 +80,7 @@ func mapToUserGetResponse(user *getUserResponse) *ak.User {
 	return &userGetResponse
 }
 
-func mapToCreateOrUpdateProviderResponse(provider *createOrUpdateOidcProviderResponse) *ak.OidcProvider {
+func mapToGetOidcProviderResponse(host string, provider *getOidcProviderResponse) *ak.OidcProvider {
 	var redirectUris []ak.OidcRedirectUri
 
 	for _, redirectUri := range provider.RedirectUris {
@@ -111,7 +112,7 @@ func mapToCreateOrUpdateProviderResponse(provider *createOrUpdateOidcProviderRes
 	return &providerResp
 }
 
-func mapToCreateOrUpdateApplicationResponse(application *createOrUpdateApplicationResponse) *ak.Application {
+func mapToCreateOrUpdateApplicationResponse(application *getApplicationResponse) *ak.Application {
 	applicationResp := ak.Application{
 		PK:           application.PK,
 		Name:         application.Name,
@@ -142,6 +143,21 @@ func mapToGetApplicationsByNameResponse(apps *getApplicationsResponse) *ak.Appli
 	var applicationsResp ak.Application
 
 	for _, app := range apps.Results {
+		switch app.ProviderObj.MetaModelName {
+		case ProviderTypeMetaModelLDAP:
+			applicationsResp.ProviderType = constants.ProviderTypeLDAP
+		case ProviderTypeMetaModelOIDC:
+			applicationsResp.ProviderType = constants.ProviderTypeOIDC
+		case ProviderTypeMetaModelProxy:
+			applicationsResp.ProviderType = constants.ProviderTypeProxy
+		case ProviderTypeMetaModelRAC:
+			applicationsResp.ProviderType = constants.ProviderTypeRAC
+		case ProviderTypeMetaModelSAML:
+			applicationsResp.ProviderType = constants.ProviderTypeSAML
+		case ProviderTypeMetaModelSCIM:
+			applicationsResp.ProviderType = constants.ProviderTypeSCIM
+		}
+
 		applicationsResp.PK = app.PK
 		applicationsResp.Name = app.Name
 		applicationsResp.Slug = app.Slug
