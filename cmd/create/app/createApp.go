@@ -14,7 +14,8 @@ var providerType string
 var oidcClientType string
 var oidcEncryptToken bool
 var oidcConsentType string
-var oidcRedirectUris []string
+var oidcRedirectUrisStrict []string
+var oidcRedirectUrisRegex []string
 
 func CreateAppCmd() *cobra.Command {
 	var err error
@@ -44,7 +45,8 @@ Examples:
 	c.Flags().StringVar(&oidcClientType, "oidc-client-type", "public", "OIDC client type")
 	c.Flags().StringVar(&oidcConsentType, "oidc-consent-type", "explicit", "OIDC consent type")
 	c.Flags().BoolVar(&oidcEncryptToken, "oidc-encrypt-tokens", false, "Enable encrypted tokens for OIDC provider")
-	c.Flags().StringArrayVar(&oidcRedirectUris, "oidc-redirect-uri", []string{}, "Redirect URIs for the OIDC provider")
+	c.Flags().StringArrayVar(&oidcRedirectUrisStrict, "oidc-redirect-uri-strict", []string{}, "Strict redirect URIs for the OIDC provider")
+	c.Flags().StringArrayVar(&oidcRedirectUrisRegex, "oidc-redirect-uri-regex", []string{}, "Regex redirect URIs for the OIDC provider")
 
 	err = c.MarkFlagRequired("provider-type")
 	if err != nil {
@@ -58,7 +60,7 @@ Examples:
 func createApp(name, providerType string) (err error) {
 	switch providerType {
 	case "oidc":
-		err = app.CreateOidc(name, slug, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUris)
+		err = app.CreateOidc(name, slug, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUrisStrict, oidcRedirectUrisRegex)
 		if err != nil {
 			return err
 		}

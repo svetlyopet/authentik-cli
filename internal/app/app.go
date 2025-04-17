@@ -10,10 +10,10 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/provider"
 )
 
-func CreateOidc(name, slug, oidcClientType, oidcConsentType string, oidcEncryptToken bool, oidcRedirectUris []string) error {
+func CreateOidc(name, slug, oidcClientType, oidcConsentType string, oidcEncryptToken bool, oidcRedirectUrisStrict, oidcRedirectUrisRegex []string) error {
 	var providerPK int
 
-	oidcProvider, err := provider.CreateOidcProvider(name, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUris)
+	oidcProvider, err := provider.CreateOidcProvider(name, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUrisStrict, oidcRedirectUrisRegex)
 	if err != nil {
 		return err
 	}

@@ -10,15 +10,25 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
 
-func CreateOidcProvider(name, oidcClientType, oidcConsentType string, oidcEncryptTokens bool, oidcRedirectUris []string) (provider *ak.OidcProvider, err error) {
-	// TODO: add support for regex urls
-	var redirectUris []ak.OidcRedirectUri
-	for _, url := range oidcRedirectUris {
-		redirectUris = append(redirectUris, ak.OidcRedirectUri{
+func CreateOidcProvider(name, oidcClientType, oidcConsentType string, oidcEncryptTokens bool, oidcRedirectUrisStrict, oidcRedirectUrisRegex []string) (provider *ak.OidcProvider, err error) {
+	var redirectUrisStrict []ak.OidcRedirectUri
+	for _, url := range oidcRedirectUrisStrict {
+		redirectUrisStrict = append(redirectUrisStrict, ak.OidcRedirectUri{
 			MatchingMode: OidcRedirectUriMatchingModeStrict,
 			Url:          url,
 		})
 	}
+	var redirectUrisRegex []ak.OidcRedirectUri
+	for _, url := range oidcRedirectUrisRegex {
+		redirectUrisRegex = append(redirectUrisRegex, ak.OidcRedirectUri{
+			MatchingMode: OidcRedirectUriMatchingModeRegex,
+			Url:          url,
+		})
+	}
+
+	var redirectUris []ak.OidcRedirectUri
+	redirectUris = append(redirectUris, redirectUrisStrict...)
+	redirectUris = append(redirectUris, redirectUrisRegex...)
 
 	var authenticationFlow string
 	var authorizationFlow string
