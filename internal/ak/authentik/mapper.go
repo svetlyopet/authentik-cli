@@ -1,6 +1,8 @@
 package authentik
 
 import (
+	"fmt"
+
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
@@ -139,10 +141,16 @@ func mapToGetFlowsResponse(flows *getFlowsResponse) []ak.Flow {
 	return flowsResp
 }
 
-func mapToGetApplicationsByNameResponse(apps *getApplicationsResponse) *ak.Application {
+func mapToGetApplicationsByNameResponse(apps *getApplicationsResponse, name string) (a *ak.Application, err error) {
 	var applicationsResp ak.Application
 
+	var found bool
 	for _, app := range apps.Results {
+		if app.Name != name {
+			continue
+		}
+		found = true
+
 		switch app.ProviderObj.MetaModelName {
 		case ProviderTypeMetaModelLDAP:
 			applicationsResp.ProviderType = constants.ProviderTypeLDAP
@@ -165,5 +173,9 @@ func mapToGetApplicationsByNameResponse(apps *getApplicationsResponse) *ak.Appli
 		applicationsResp.ProviderName = app.ProviderObj.Name
 	}
 
-	return &applicationsResp
+	if !found {
+		return nil, fmt.Errorf("application not found")
+	}
+
+	return &applicationsResp, nil
 }

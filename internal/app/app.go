@@ -67,7 +67,6 @@ func Delete(name string) error {
 		if errors.As(err, &notExistsError) {
 			return nil
 		}
-		return err
 	}
 
 	if err = core.DeleteApplication(app.Name, app.Slug); err != nil {
@@ -75,7 +74,6 @@ func Delete(name string) error {
 		if errors.As(err, &notExistsError) {
 			return nil
 		}
-		return err
 	}
 
 	if err = provider.DeleteProvider(app.Name, app.ProviderPK); err != nil {

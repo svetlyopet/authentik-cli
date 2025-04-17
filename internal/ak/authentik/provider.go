@@ -72,7 +72,7 @@ func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcPr
 }
 
 func (a *authentik) DeleteProvider(id int) error {
-	response, err := a.doRequest(http.MethodGet, fmt.Sprintf(providersAllDeletePath, a.url, id), nil)
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(providersAllDeletePath, a.url, id), nil)
 	if err != nil {
 		return err
 	}

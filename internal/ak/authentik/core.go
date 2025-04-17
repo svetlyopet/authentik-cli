@@ -274,15 +274,12 @@ func (a *authentik) GetApplicationByName(name string) (*ak.Application, error) {
 		return nil, err
 	}
 
-	if len(getApplicationsResp.Results) == 0 {
+	application, err := mapToGetApplicationsByNameResponse(&getApplicationsResp, name)
+	if err != nil {
 		return nil, customErrors.NewNotExists("application not found")
 	}
 
-	if len(getApplicationsResp.Results) > 1 {
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("found more than 1 application while searching for %s", name))
-	}
-
-	return mapToGetApplicationsByNameResponse(&getApplicationsResp), nil
+	return application, nil
 }
 
 func (a *authentik) DeleteApplication(slug string) error {
