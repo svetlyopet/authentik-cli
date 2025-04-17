@@ -21,8 +21,8 @@ Examples:
   %s create tenant example-tenant`, constants.CmdName),
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			tenantName := args[0]
-			err := tenant.Create(tenantName)
+			name := args[0]
+			err := tenant.Create(name)
 			cobra.CheckErr(err)
 		},
 	}

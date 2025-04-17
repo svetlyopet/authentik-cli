@@ -59,20 +59,20 @@ Examples:
 
 func createApp(name, providerType string) (err error) {
 	switch providerType {
-	case "oidc":
+	case constants.ProviderTypeOIDC:
 		err = app.CreateOidc(name, slug, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUrisStrict, oidcRedirectUrisRegex)
 		if err != nil {
 			return err
 		}
-	case "ldap":
+	case constants.ProviderTypeLDAP:
 		return fmt.Errorf("LDAP provider is not supported yet")
-	case "saml":
+	case constants.ProviderTypeSAML:
 		return fmt.Errorf("SAML provider is not supported yet")
-	case "proxy":
+	case constants.ProviderTypeProxy:
 		return fmt.Errorf("Proxy provider is not supported yet")
-	case "rac":
+	case constants.ProviderTypeRAC:
 		return fmt.Errorf("RAC provider is not supported yet")
-	case "scim":
+	case constants.ProviderTypeSCIM:
 		return fmt.Errorf("SCIM provider is not supported yet")
 	default:
 		return fmt.Errorf("%s is not a supported provider type", providerType)

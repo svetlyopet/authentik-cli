@@ -11,15 +11,12 @@ import (
 )
 
 func CreateOidc(name, slug, oidcClientType, oidcConsentType string, oidcEncryptToken bool, oidcRedirectUrisStrict, oidcRedirectUrisRegex []string) error {
-	var providerPK int
-
 	oidcProvider, err := provider.CreateOidcProvider(name, oidcClientType, oidcConsentType, oidcEncryptToken, oidcRedirectUrisStrict, oidcRedirectUrisRegex)
 	if err != nil {
 		return err
 	}
-	providerPK = oidcProvider.PK
 
-	err = core.CreateApplication(name, slug, providerPK)
+	err = core.CreateApplication(name, slug, oidcProvider.PK)
 	if err != nil {
 		return err
 	}
@@ -43,16 +40,6 @@ func Get(name string) (*App, error) {
 		}
 
 		appDetails = mapToGetAppWithOidcProvider(application, *prov)
-	case constants.ProviderTypeLDAP:
-		return nil, fmt.Errorf("LDAP provider is not supported yet")
-	case constants.ProviderTypeSAML:
-		return nil, fmt.Errorf("SAML provider is not supported yet")
-	case constants.ProviderTypeProxy:
-		return nil, fmt.Errorf("Proxy provider is not supported yet")
-	case constants.ProviderTypeRAC:
-		return nil, fmt.Errorf("RAC provider is not supported yet")
-	case constants.ProviderTypeSCIM:
-		return nil, fmt.Errorf("SCIM provider is not supported yet")
 	default:
 		return nil, fmt.Errorf("%s is not a supported provider type", application.ProviderType)
 	}
