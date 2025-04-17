@@ -61,6 +61,7 @@ func Get(name string) (*App, error) {
 }
 
 func Delete(name string) error {
+	// TODO: also check if a provider exists with the same name and delete it to allow for idempotence
 	app, err := core.GetApplication(name)
 	if err != nil {
 		var notExistsError *customErrors.NotExists

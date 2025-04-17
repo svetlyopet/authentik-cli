@@ -19,7 +19,7 @@ AK_CLI_BIN="$AK_CLI_PATH/ak"
 TEST_TENANT_NAME="example-tenant"
 TEST_USER_NAME="example-user"
 TEST_GROUP_NAME="example-group"
-TEST_OIDC_APP_NAME="example-app"
+TEST_OIDC_APP_NAME="example-app-oidc"
 
 source $CI_ENV_FILE
 
@@ -87,6 +87,24 @@ delete_tenant() {
   test_passed "$test_name"
 }
 
+create_app_oidc() {
+  local test_name="Create OIDC app"
+  test_start "$test_name"
+  $AK_CLI_BIN create app $TEST_OIDC_APP_NAME \
+  --provider-type=oidc \
+  --oidc-client-type=confidential \
+  --oidc-redirect-uri-strict=http://localhost:8000 \
+  --oidc-redirect-uri-regex='http://*.local:9000'
+  test_passed "$test_name"
+}
+
+delete_app() {
+  local test_name="Delete app"
+  test_start "$test_name"
+  $AK_CLI_BIN delete app $TEST_OIDC_APP_NAME
+  test_passed "$test_name"
+}
+
 
 cleanup() {
   echo "Cleaning up..."
@@ -139,10 +157,12 @@ main() {
   create_config
   create_tenant
   create_admin_user_for_tenant
-  create_group
-  delete_group
   delete_user
   delete_tenant
+  create_group
+  delete_group
+  create_app_oidc
+  delete_app
 }
 
 main "$@"
