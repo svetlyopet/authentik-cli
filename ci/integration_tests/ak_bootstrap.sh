@@ -42,6 +42,10 @@ compose() {
   echo "api-token: $AUTHENTIK_BOOTSTRAP_TOKEN"
 }
 
+wait_for_init() {
+  sleep 10
+}
+
 cleanup() {
   docker compose -f $CI_TEST_DIR/docker-compose.yml down -v
   rm -f $CI_TEST_DIR/.env 2&>/dev/null
@@ -53,6 +57,7 @@ main() {
     create)
       generate_env
       compose
+      wait_for_init
       ;;
     destroy)
       cleanup
