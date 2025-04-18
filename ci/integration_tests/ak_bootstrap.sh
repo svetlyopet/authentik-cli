@@ -6,12 +6,14 @@ set -eo pipefail
 : ${AUTHENTIK_URL:="http://localhost:9000"}
 
 AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')
-AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 36 | tr -d '\n')
-AUTHENTIK_BOOTSTRAP_TOKEN=$(openssl rand -base64 36 | tr -d '\n')
+AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 30 | tr -d '\n')
+AUTHENTIK_BOOTSTRAP_TOKEN=$(openssl rand -base64 30 | tr -d '\n')
 
 PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
 
 CI_TEST_DIR=$(pwd)/ci/integration_tests
+
+WAIT_FOR_INIT=20
 
 help() {
   echo "Usage: $0 [command]"
@@ -36,14 +38,19 @@ generate_env() {
 
 compose() {
   docker compose -f $CI_TEST_DIR/docker-compose.yml up -d
+}
+
+wait_for_init() {
+  echo "Sleeping for $WAIT_FOR_INIT seconds until Authentik initializes..."
+  sleep $WAIT_FOR_INIT
+}
+
+print_creds() {
+  echo "##################### Credentials ####################"
   echo "login link: $AUTHENTIK_URL"
   echo "user: akadmin"
   echo "password: $AUTHENTIK_BOOTSTRAP_PASSWORD"
   echo "api-token: $AUTHENTIK_BOOTSTRAP_TOKEN"
-}
-
-wait_for_init() {
-  sleep 10
 }
 
 cleanup() {
@@ -58,6 +65,7 @@ main() {
       generate_env
       compose
       wait_for_init
+      print_creds
       ;;
     destroy)
       cleanup
