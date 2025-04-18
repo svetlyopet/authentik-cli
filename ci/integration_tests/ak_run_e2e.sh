@@ -129,9 +129,11 @@ test_passed() {
 check_authentik_status() {
   local max_retries=10
   local retry_count=0
-  local retry_interval=2
+  local retry_interval=5
 
   echo "Checking Authentik target health... "
+
+  set +e
 
   while [[ $retry_count -lt $max_retries ]]; do
     response_code=$(curl -s -o /dev/null -w "%{http_code}" "${AUTHENTIK_URL}/-/health/ready/")
@@ -139,6 +141,7 @@ check_authentik_status() {
     if [[ $response_code -eq 200 ]]; then
       echo -e "Authentik is ${GREEN}up and running${ENDCOLOR} at $AUTHENTIK_URL"
       echo
+      set -e
       return 0
     else
       echo -e "${YELLOW}Authentik is not ready. Retrying in $retry_interval seconds...${ENDCOLOR}"
@@ -148,7 +151,7 @@ check_authentik_status() {
   done
 
   echo -e "${RED}Authentik is not ready after $max_retries retries. Aborting...${ENDCOLOR}"
-  return 1
+  exit 1
 }
 
 main() {
