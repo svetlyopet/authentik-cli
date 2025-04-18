@@ -13,7 +13,7 @@ PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
 
 CI_TEST_DIR=$(pwd)/ci/integration_tests
 
-WAIT_FOR_INIT=20
+WAIT_FOR_INIT=30
 
 help() {
   echo "Usage: $0 [command]"
