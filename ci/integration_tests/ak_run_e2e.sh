@@ -7,8 +7,18 @@ GREEN="\033[32m"
 RED="\033[31m"
 ENDCOLOR="\033[0m"
 
+
+ARCH=$(uname -m)
+if [ $ARCH == "arm64" ]; then
+  GO_ARCH="arm64"
+elif [ $ARCH == "x86_64" ]; then
+  GO_ARCH="amd64"
+else
+  echo "unsuported architecture $ARCH"
+  exit 1
+fi
+
 GO_BIN=$(which go)
-GO_ARCH=$(uname -m)
 
 CI_TEST_DIR=$(pwd)/ci/integration_tests
 CI_ENV_FILE="$CI_TEST_DIR/.env"
