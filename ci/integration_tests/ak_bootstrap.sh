@@ -4,6 +4,8 @@ set -eo pipefail
 
 : ${AUTHENTIK_TAG:="2025.2.4"}
 : ${AUTHENTIK_URL:="http://localhost:9000"}
+: ${AK_BOOTSTRAP_CI:="false"}
+: ${AK_BOOTSTRAP_WAIT:="10"}
 
 AUTHENTIK_SECRET_KEY=$(openssl rand -base64 60 | tr -d '\n')
 AUTHENTIK_BOOTSTRAP_PASSWORD=$(openssl rand -base64 30 | tr -d '\n')
@@ -12,8 +14,6 @@ AUTHENTIK_BOOTSTRAP_TOKEN=$(openssl rand -base64 30 | tr -d '\n')
 PG_PASS=$(openssl rand -base64 36 | tr -d '\n')
 
 CI_TEST_DIR=$(pwd)/ci/integration_tests
-
-WAIT_FOR_INIT=60
 
 help() {
   echo "Usage: $0 [command]"
@@ -40,17 +40,22 @@ compose() {
   docker compose -f $CI_TEST_DIR/docker-compose.yml up -d
 }
 
-wait_for_init() {
-  echo "Sleeping for $WAIT_FOR_INIT seconds until Authentik initializes..."
-  sleep $WAIT_FOR_INIT
+bootstrap_wait() {
+  echo "Sleeping for $AK_BOOTSTRAP_WAIT seconds until Authentik initializes..."
+  sleep $AK_BOOTSTRAP_WAIT
 }
 
-print_creds() {
-  echo "##################### Credentials ####################"
-  echo "login link: $AUTHENTIK_URL"
-  echo "user: akadmin"
-  echo "password: $AUTHENTIK_BOOTSTRAP_PASSWORD"
-  echo "api-token: $AUTHENTIK_BOOTSTRAP_TOKEN"
+print_details() {
+  if [ $AK_BOOTSTRAP_CI == "false" ]; then
+    echo "####################### Details ######################"
+    echo "link: $AUTHENTIK_URL"
+    echo "username: akadmin"
+    echo "password: $AUTHENTIK_BOOTSTRAP_PASSWORD"
+    echo "api-token: $AUTHENTIK_BOOTSTRAP_TOKEN"
+  else
+    echo "####################### Details ######################"
+    echo "link: $AUTHENTIK_URL"
+  fi 
 }
 
 cleanup() {
@@ -64,8 +69,8 @@ main() {
     create)
       generate_env
       compose
-      wait_for_init
-      print_creds
+      bootstrap_wait
+      print_details
       ;;
     destroy)
       cleanup
