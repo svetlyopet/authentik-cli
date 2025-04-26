@@ -9,6 +9,7 @@ type Group struct {
 	PK              string
 	Name            string
 	GroupAttributes GroupAttributes
+	Roles           []Role
 }
 
 type GroupAttributes struct {

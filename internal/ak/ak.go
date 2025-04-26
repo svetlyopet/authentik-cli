@@ -9,6 +9,7 @@ type AuthentikRepository interface {
 	DeleteRole(uuid string) error
 	AssignViewPermissionsToTenantRole(rolePK string) error
 	CreateGroup(name string, roles []string, attributes GroupAttributes) (*Group, error)
+	GetGroup(uuid string) (*Group, error)
 	GetGroupByName(name string) (*Group, error)
 	DeleteGroup(uuid string) error
 	AddUserToGroup(userPK int, uuid string) error

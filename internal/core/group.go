@@ -20,6 +20,20 @@ func CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*a
 	return group, nil
 }
 
+func GetGroupDetails(name string) (*Group, error) {
+	groupPreflight, err := ak.Repo.GetGroupByName(name)
+	if err != nil {
+		return nil, err
+	}
+
+	group, err := ak.Repo.GetGroup(groupPreflight.PK)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapToGetGroupDetails(group), nil
+}
+
 func GetGroupByName(name string) (group *ak.Group, err error) {
 	group, err = ak.Repo.GetGroupByName(name)
 	if err != nil {

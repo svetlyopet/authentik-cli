@@ -68,7 +68,7 @@ func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcPr
 		return nil, err
 	}
 
-	return mapToGetOidcProviderResponse(a.url, &oidcProvidersResp), nil
+	return mapToGetOidcProviderResponse(&oidcProvidersResp), nil
 }
 
 func (a *authentik) DeleteProvider(id int) error {
@@ -112,5 +112,5 @@ func (a *authentik) GetOidcProvider(id int) (*ak.OidcProvider, error) {
 		return nil, err
 	}
 
-	return mapToGetOidcProviderResponse(a.url, &getOidcProviderResp), nil
+	return mapToGetOidcProviderResponse(&getOidcProviderResp), nil
 }

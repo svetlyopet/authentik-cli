@@ -36,14 +36,34 @@ func mapToCreateOrUpdateGroupResponse(group *getGroupResponse) *ak.Group {
 	}
 }
 
-func mapToGetGroupByNameResponse(roles *getGroupsResponse) *ak.Group {
-	res := &ak.Group{}
-	for _, role := range roles.Results {
-		res = &ak.Group{
+func mapToGetGroupResponse(group *getGroupResponse) *ak.Group {
+	var roles = []ak.Role{}
+
+	for _, role := range group.RolesObj {
+		roles = append(roles, ak.Role{
 			PK:   role.PK,
 			Name: role.Name,
+		})
+	}
+
+	return &ak.Group{
+		PK:   group.PK,
+		Name: group.Name,
+		GroupAttributes: ak.GroupAttributes{
+			Tenant: group.Attributes.Tenant,
+		},
+		Roles: roles,
+	}
+}
+
+func mapToGetGroupByNameResponse(groups *getGroupsResponse) *ak.Group {
+	res := &ak.Group{}
+	for _, group := range groups.Results {
+		res = &ak.Group{
+			PK:   group.PK,
+			Name: group.Name,
 			GroupAttributes: ak.GroupAttributes{
-				Tenant: role.Attributes.Tenant,
+				Tenant: group.Attributes.Tenant,
 			},
 		}
 	}
@@ -82,7 +102,7 @@ func mapToUsersGetResponse(users *getUsersResponse) *ak.User {
 	return &userGetResponse
 }
 
-func mapToGetOidcProviderResponse(host string, provider *getOidcProviderResponse) *ak.OidcProvider {
+func mapToGetOidcProviderResponse(provider *getOidcProviderResponse) *ak.OidcProvider {
 	var redirectUris []ak.OidcRedirectUri
 
 	for _, redirectUri := range provider.RedirectUris {

@@ -14,9 +14,9 @@ import (
 
 const (
 	coreUsersPath                    = "%s/api/v3/core/users/"
-	coreUsersPathUpdateDelete        = "%s/api/v3/core/users/%s/"
+	coreUsersPathUpdateDeletePath    = "%s/api/v3/core/users/%s/"
 	coreGroupsPath                   = "%s/api/v3/core/groups/"
-	coreGroupsPathUpdateDelete       = "%s/api/v3/core/groups/%s/"
+	coreGroupsPathUpdateDeletePath   = "%s/api/v3/core/groups/%s/"
 	coreGroupsAddUserPath            = "%s/api/v3/core/groups/%s/add_user/"
 	coreApplicationsPath             = "%s/api/v3/core/applications/"
 	coreApplicationsUpdateDeletePath = "%s/api/v3/core/applications/%s/"
@@ -92,8 +92,29 @@ func (a *authentik) GetGroupByName(name string) (*ak.Group, error) {
 	return mapToGetGroupByNameResponse(&getGroupsResp), nil
 }
 
+func (a *authentik) GetGroup(uuid string) (*ak.Group, error) {
+	response, err := a.doRequest(http.MethodGet, fmt.Sprintf(coreGroupsPathUpdateDeletePath, a.url, uuid), nil)
+	if err != nil {
+		return nil, err
+	}
+	defer response.Body.Close()
+
+	if response.StatusCode != http.StatusOK {
+		errBody, _ := io.ReadAll(response.Body)
+		return nil, fmt.Errorf("get group: %s", string(errBody))
+	}
+
+	var getGroupResp getGroupResponse
+	err = json.NewDecoder(response.Body).Decode(&getGroupResp)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapToGetGroupResponse(&getGroupResp), nil
+}
+
 func (a *authentik) DeleteGroup(uuid string) error {
-	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreGroupsPathUpdateDelete, a.url, uuid), nil)
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreGroupsPathUpdateDeletePath, a.url, uuid), nil)
 	if err != nil {
 		return err
 	}
@@ -205,7 +226,7 @@ func (a *authentik) GetUserByUsername(username string) (*ak.User, error) {
 }
 
 func (a *authentik) DeleteUser(userPK string) error {
-	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreUsersPathUpdateDelete, a.url, userPK), nil)
+	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(coreUsersPathUpdateDeletePath, a.url, userPK), nil)
 	if err != nil {
 		return err
 	}
