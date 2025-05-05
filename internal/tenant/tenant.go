@@ -1,11 +1,13 @@
 package tenant
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/internal/core"
+	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 	"github.com/svetlyopet/authentik-cli/internal/logger"
 	"github.com/svetlyopet/authentik-cli/internal/rbac"
 )
@@ -38,6 +40,32 @@ func Create(name string) (err error) {
 	}
 
 	return nil
+}
+
+func Get(name string) (tenant *Tenant, err error) {
+	roleName := fmt.Sprintf(constants.TenantAdminRbacRoleNamePattern, name)
+
+	_, err = rbac.GetRoleByName(roleName)
+	if err != nil {
+		var customErrors *customErrors.NotExists
+		if errors.As(err, &customErrors) {
+			return nil, errors.New("tenant not found")
+		}
+		return nil, err
+	}
+
+	groupName := fmt.Sprintf(constants.TenantAdminGroupNamePattern, name)
+
+	_, err = core.GetGroupByName(groupName)
+	if err != nil {
+		var customErrors *customErrors.NotExists
+		if errors.As(err, &customErrors) {
+			return nil, errors.New("tenant not found")
+		}
+		return nil, err
+	}
+
+	return MapToGetTenant(name, groupName, roleName), nil
 }
 
 func Delete(name string) (err error) {
