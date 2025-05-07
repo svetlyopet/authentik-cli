@@ -59,8 +59,7 @@ print_details() {
 }
 
 cleanup() {
-  set +e
-  docker compose -f $CI_TEST_DIR/docker-compose.yml down -v
+  docker compose -f $CI_TEST_DIR/docker-compose.yml down -v || true
   rm -f $CI_TEST_DIR/.env 2&>/dev/null
   rm -rf $CI_TEST_DIR/certs $CI_TEST_DIR/custom-templates $CI_TEST_DIR/media 2&>/dev/null
 }
