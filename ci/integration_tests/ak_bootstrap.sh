@@ -61,7 +61,6 @@ print_details() {
 cleanup() {
   docker compose -f $CI_TEST_DIR/docker-compose.yml down -v
   rm -f $CI_TEST_DIR/.env
-  rm -rf $CI_TEST_DIR/certs $CI_TEST_DIR/custom-templates $CI_TEST_DIR/media
 }
 
 main() {
