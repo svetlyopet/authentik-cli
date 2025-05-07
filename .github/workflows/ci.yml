@@ -24,10 +24,10 @@ jobs:
       run: ./ci/integration_tests/ak_bootstrap.sh create
       env:
         AK_BOOTSTRAP_CI: "true"
-        AK_BOOTSTRAP_WAIT: "60"
+        AK_BOOTSTRAP_WAIT: "90"
 
     - name: Run e2e tests
-      run: AK_BOOSTRAP_CI=true ./ci/integration_tests/ak_run_e2e.sh
+      run: ./ci/integration_tests/ak_run_e2e.sh
 
     - name: Destroy e2e env
       run: ./ci/integration_tests/ak_bootstrap.sh destroy
