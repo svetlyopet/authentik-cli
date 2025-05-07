@@ -5,7 +5,7 @@ See the [README for running Authentik locally](./ci/integration_tests/README.md)
 ### mock generation
 Install https://github.com/uber-go/mock
 ```bash
-go get go.uber.org/mock/gomock
+go install go.uber.org/mock/mockgen@latest
 ```
 
 Generate mocks the interfaces

@@ -5,7 +5,7 @@ go 1.23.6
 require (
 	github.com/spf13/cobra v1.9.1
 	github.com/spf13/viper v1.19.0
-	go.uber.org/mock v0.5.0
+	go.uber.org/mock v0.5.2
 	gopkg.in/yaml.v3 v3.0.1
 )
 

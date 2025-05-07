@@ -20,6 +20,7 @@ import (
 type MockAuthentikRepository struct {
 	ctrl     *gomock.Controller
 	recorder *MockAuthentikRepositoryMockRecorder
+	isgomock struct{}
 }
 
 // MockAuthentikRepositoryMockRecorder is the mock recorder for MockAuthentikRepository.
@@ -254,6 +255,21 @@ func (m *MockAuthentikRepository) GetFlows() ([]ak.Flow, error) {
 func (mr *MockAuthentikRepositoryMockRecorder) GetFlows() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlows", reflect.TypeOf((*MockAuthentikRepository)(nil).GetFlows))
+}
+
+// GetGroup mocks base method.
+func (m *MockAuthentikRepository) GetGroup(uuid string) (*ak.Group, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroup", uuid)
+	ret0, _ := ret[0].(*ak.Group)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroup indicates an expected call of GetGroup.
+func (mr *MockAuthentikRepositoryMockRecorder) GetGroup(uuid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroup", reflect.TypeOf((*MockAuthentikRepository)(nil).GetGroup), uuid)
 }
 
 // GetGroupByName mocks base method.
