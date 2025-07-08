@@ -2,7 +2,7 @@
 
 set -eo pipefail
 
-: ${AUTHENTIK_TAG:="2025.2.4"}
+: ${AUTHENTIK_TAG:="2025.6.3"}
 : ${AUTHENTIK_URL:="http://localhost:9000"}
 : ${AK_BOOTSTRAP_CI:="false"}
 : ${AK_BOOTSTRAP_WAIT:="10"}
