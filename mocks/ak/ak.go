@@ -331,3 +331,353 @@ func (mr *MockAuthentikRepositoryMockRecorder) GetUserByUsername(username any) *
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockAuthentikRepository)(nil).GetUserByUsername), username)
 }
+
+// MockAuthentikCore is a mock of AuthentikCore interface.
+type MockAuthentikCore struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthentikCoreMockRecorder
+	isgomock struct{}
+}
+
+// MockAuthentikCoreMockRecorder is the mock recorder for MockAuthentikCore.
+type MockAuthentikCoreMockRecorder struct {
+	mock *MockAuthentikCore
+}
+
+// NewMockAuthentikCore creates a new mock instance.
+func NewMockAuthentikCore(ctrl *gomock.Controller) *MockAuthentikCore {
+	mock := &MockAuthentikCore{ctrl: ctrl}
+	mock.recorder = &MockAuthentikCoreMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthentikCore) EXPECT() *MockAuthentikCoreMockRecorder {
+	return m.recorder
+}
+
+// AddUserToGroup mocks base method.
+func (m *MockAuthentikCore) AddUserToGroup(userPK int, uuid string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AddUserToGroup", userPK, uuid)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AddUserToGroup indicates an expected call of AddUserToGroup.
+func (mr *MockAuthentikCoreMockRecorder) AddUserToGroup(userPK, uuid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AddUserToGroup", reflect.TypeOf((*MockAuthentikCore)(nil).AddUserToGroup), userPK, uuid)
+}
+
+// CreateGroup mocks base method.
+func (m *MockAuthentikCore) CreateGroup(name string, roles []string, attributes ak.GroupAttributes) (*ak.Group, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateGroup", name, roles, attributes)
+	ret0, _ := ret[0].(*ak.Group)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateGroup indicates an expected call of CreateGroup.
+func (mr *MockAuthentikCoreMockRecorder) CreateGroup(name, roles, attributes any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateGroup", reflect.TypeOf((*MockAuthentikCore)(nil).CreateGroup), name, roles, attributes)
+}
+
+// CreateUser mocks base method.
+func (m *MockAuthentikCore) CreateUser(usr ak.User) (*ak.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateUser", usr)
+	ret0, _ := ret[0].(*ak.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateUser indicates an expected call of CreateUser.
+func (mr *MockAuthentikCoreMockRecorder) CreateUser(usr any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateUser", reflect.TypeOf((*MockAuthentikCore)(nil).CreateUser), usr)
+}
+
+// DeleteGroup mocks base method.
+func (m *MockAuthentikCore) DeleteGroup(uuid string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteGroup", uuid)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteGroup indicates an expected call of DeleteGroup.
+func (mr *MockAuthentikCoreMockRecorder) DeleteGroup(uuid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteGroup", reflect.TypeOf((*MockAuthentikCore)(nil).DeleteGroup), uuid)
+}
+
+// DeleteUser mocks base method.
+func (m *MockAuthentikCore) DeleteUser(userPK string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteUser", userPK)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteUser indicates an expected call of DeleteUser.
+func (mr *MockAuthentikCoreMockRecorder) DeleteUser(userPK any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteUser", reflect.TypeOf((*MockAuthentikCore)(nil).DeleteUser), userPK)
+}
+
+// GetGroup mocks base method.
+func (m *MockAuthentikCore) GetGroup(uuid string) (*ak.Group, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroup", uuid)
+	ret0, _ := ret[0].(*ak.Group)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroup indicates an expected call of GetGroup.
+func (mr *MockAuthentikCoreMockRecorder) GetGroup(uuid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroup", reflect.TypeOf((*MockAuthentikCore)(nil).GetGroup), uuid)
+}
+
+// GetGroupByName mocks base method.
+func (m *MockAuthentikCore) GetGroupByName(name string) (*ak.Group, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetGroupByName", name)
+	ret0, _ := ret[0].(*ak.Group)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetGroupByName indicates an expected call of GetGroupByName.
+func (mr *MockAuthentikCoreMockRecorder) GetGroupByName(name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetGroupByName", reflect.TypeOf((*MockAuthentikCore)(nil).GetGroupByName), name)
+}
+
+// GetUserByUsername mocks base method.
+func (m *MockAuthentikCore) GetUserByUsername(username string) (*ak.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByUsername", username)
+	ret0, _ := ret[0].(*ak.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByUsername indicates an expected call of GetUserByUsername.
+func (mr *MockAuthentikCoreMockRecorder) GetUserByUsername(username any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockAuthentikCore)(nil).GetUserByUsername), username)
+}
+
+// MockAuthentikRbac is a mock of AuthentikRbac interface.
+type MockAuthentikRbac struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthentikRbacMockRecorder
+	isgomock struct{}
+}
+
+// MockAuthentikRbacMockRecorder is the mock recorder for MockAuthentikRbac.
+type MockAuthentikRbacMockRecorder struct {
+	mock *MockAuthentikRbac
+}
+
+// NewMockAuthentikRbac creates a new mock instance.
+func NewMockAuthentikRbac(ctrl *gomock.Controller) *MockAuthentikRbac {
+	mock := &MockAuthentikRbac{ctrl: ctrl}
+	mock.recorder = &MockAuthentikRbacMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthentikRbac) EXPECT() *MockAuthentikRbacMockRecorder {
+	return m.recorder
+}
+
+// AssignViewPermissionsToTenantRole mocks base method.
+func (m *MockAuthentikRbac) AssignViewPermissionsToTenantRole(rolePK string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AssignViewPermissionsToTenantRole", rolePK)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// AssignViewPermissionsToTenantRole indicates an expected call of AssignViewPermissionsToTenantRole.
+func (mr *MockAuthentikRbacMockRecorder) AssignViewPermissionsToTenantRole(rolePK any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AssignViewPermissionsToTenantRole", reflect.TypeOf((*MockAuthentikRbac)(nil).AssignViewPermissionsToTenantRole), rolePK)
+}
+
+// CreateRole mocks base method.
+func (m *MockAuthentikRbac) CreateRole(name string) (*ak.Role, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateRole", name)
+	ret0, _ := ret[0].(*ak.Role)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateRole indicates an expected call of CreateRole.
+func (mr *MockAuthentikRbacMockRecorder) CreateRole(name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateRole", reflect.TypeOf((*MockAuthentikRbac)(nil).CreateRole), name)
+}
+
+// DeleteRole mocks base method.
+func (m *MockAuthentikRbac) DeleteRole(uuid string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteRole", uuid)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteRole indicates an expected call of DeleteRole.
+func (mr *MockAuthentikRbacMockRecorder) DeleteRole(uuid any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteRole", reflect.TypeOf((*MockAuthentikRbac)(nil).DeleteRole), uuid)
+}
+
+// GetRoleByName mocks base method.
+func (m *MockAuthentikRbac) GetRoleByName(name string) (*ak.Role, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetRoleByName", name)
+	ret0, _ := ret[0].(*ak.Role)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetRoleByName indicates an expected call of GetRoleByName.
+func (mr *MockAuthentikRbacMockRecorder) GetRoleByName(name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetRoleByName", reflect.TypeOf((*MockAuthentikRbac)(nil).GetRoleByName), name)
+}
+
+// MockAuthentikProvider is a mock of AuthentikProvider interface.
+type MockAuthentikProvider struct {
+	ctrl     *gomock.Controller
+	recorder *MockAuthentikProviderMockRecorder
+	isgomock struct{}
+}
+
+// MockAuthentikProviderMockRecorder is the mock recorder for MockAuthentikProvider.
+type MockAuthentikProviderMockRecorder struct {
+	mock *MockAuthentikProvider
+}
+
+// NewMockAuthentikProvider creates a new mock instance.
+func NewMockAuthentikProvider(ctrl *gomock.Controller) *MockAuthentikProvider {
+	mock := &MockAuthentikProvider{ctrl: ctrl}
+	mock.recorder = &MockAuthentikProviderMockRecorder{mock}
+	return mock
+}
+
+// EXPECT returns an object that allows the caller to indicate expected use.
+func (m *MockAuthentikProvider) EXPECT() *MockAuthentikProviderMockRecorder {
+	return m.recorder
+}
+
+// CreateApplication mocks base method.
+func (m *MockAuthentikProvider) CreateApplication(name, slug string, providerPK int) (*ak.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateApplication", name, slug, providerPK)
+	ret0, _ := ret[0].(*ak.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateApplication indicates an expected call of CreateApplication.
+func (mr *MockAuthentikProviderMockRecorder) CreateApplication(name, slug, providerPK any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateApplication", reflect.TypeOf((*MockAuthentikProvider)(nil).CreateApplication), name, slug, providerPK)
+}
+
+// CreateOidcProvider mocks base method.
+func (m *MockAuthentikProvider) CreateOidcProvider(provider ak.OidcProvider) (*ak.OidcProvider, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateOidcProvider", provider)
+	ret0, _ := ret[0].(*ak.OidcProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateOidcProvider indicates an expected call of CreateOidcProvider.
+func (mr *MockAuthentikProviderMockRecorder) CreateOidcProvider(provider any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateOidcProvider", reflect.TypeOf((*MockAuthentikProvider)(nil).CreateOidcProvider), provider)
+}
+
+// DeleteApplication mocks base method.
+func (m *MockAuthentikProvider) DeleteApplication(slug string) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteApplication", slug)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteApplication indicates an expected call of DeleteApplication.
+func (mr *MockAuthentikProviderMockRecorder) DeleteApplication(slug any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteApplication", reflect.TypeOf((*MockAuthentikProvider)(nil).DeleteApplication), slug)
+}
+
+// DeleteProvider mocks base method.
+func (m *MockAuthentikProvider) DeleteProvider(pk int) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteProvider", pk)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteProvider indicates an expected call of DeleteProvider.
+func (mr *MockAuthentikProviderMockRecorder) DeleteProvider(pk any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteProvider", reflect.TypeOf((*MockAuthentikProvider)(nil).DeleteProvider), pk)
+}
+
+// GetApplicationByName mocks base method.
+func (m *MockAuthentikProvider) GetApplicationByName(name string) (*ak.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetApplicationByName", name)
+	ret0, _ := ret[0].(*ak.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetApplicationByName indicates an expected call of GetApplicationByName.
+func (mr *MockAuthentikProviderMockRecorder) GetApplicationByName(name any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationByName", reflect.TypeOf((*MockAuthentikProvider)(nil).GetApplicationByName), name)
+}
+
+// GetFlows mocks base method.
+func (m *MockAuthentikProvider) GetFlows() ([]ak.Flow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetFlows")
+	ret0, _ := ret[0].([]ak.Flow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetFlows indicates an expected call of GetFlows.
+func (mr *MockAuthentikProviderMockRecorder) GetFlows() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlows", reflect.TypeOf((*MockAuthentikProvider)(nil).GetFlows))
+}
+
+// GetOidcProvider mocks base method.
+func (m *MockAuthentikProvider) GetOidcProvider(pk int) (*ak.OidcProvider, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetOidcProvider", pk)
+	ret0, _ := ret[0].(*ak.OidcProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetOidcProvider indicates an expected call of GetOidcProvider.
+func (mr *MockAuthentikProviderMockRecorder) GetOidcProvider(pk any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOidcProvider", reflect.TypeOf((*MockAuthentikProvider)(nil).GetOidcProvider), pk)
+}
