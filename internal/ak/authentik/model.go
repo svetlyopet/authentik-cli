@@ -10,17 +10,17 @@ type pagination struct {
 	EndIndex   int `json:"end_index"`
 }
 
-type groupsObj struct {
+type groupObj struct {
 	PK          string          `json:"pk" binding:"required"`
 	NumPK       int             `json:"num_pk" binding:"required"`
 	Name        string          `json:"name" binding:"required"`
 	IsSuperuser bool            `json:"is_superuser"`
 	Parent      string          `json:"parent,omitempty"`
 	ParentName  string          `json:"parent_name,omitempty"`
-	Users       []int           `json:"users,omitempty"`
+	Users       []int           `json:"users"`
 	UsersObj    []userObj       `json:"users_obj" binding:"required"`
 	Attributes  groupAttributes `json:"attributes"`
-	Roles       []string        `json:"roles,omitempty"`
+	Roles       []string        `json:"roles"`
 	RolesObj    []roleObj       `json:"roles_obj" binding:"required"`
 }
 
@@ -29,15 +29,18 @@ type groupAttributes struct {
 }
 
 type userObj struct {
-	PK         int            `json:"pk" binding:"required"`
-	Username   string         `json:"username" binding:"required"`
-	Name       string         `json:"name" binding:"required"`
-	IsActive   bool           `json:"is_active"`
-	LastLogin  string         `json:"last_login"`
-	Email      string         `json:"email" binding:"required"`
-	Path       string         `json:"path"`
-	Attributes userAttributes `json:"attributes"`
-	Uid        string         `json:"uid" binding:"required"`
+	PK          int            `json:"pk" binding:"required"`
+	Username    string         `json:"username" binding:"required"`
+	Name        string         `json:"name" binding:"required"`
+	IsActive    bool           `json:"is_active" binding:"required"`
+	IsSuperuser bool           `json:"is_superuser" binding:"required"`
+	LastLogin   string         `json:"last_login"`
+	Email       string         `json:"email" binding:"required"`
+	Path        string         `json:"path" binding:"required"`
+	Attributes  userAttributes `json:"attributes"`
+	Uid         string         `json:"uid" binding:"required"`
+	Groups      []string       `json:"groups"`
+	GroupsObj   []groupObj     `json:"groups_obj" binding:"required"`
 }
 
 type userAttributes struct {
@@ -145,12 +148,12 @@ type createGroupRequest struct {
 }
 
 type getGroupResponse struct {
-	groupsObj
+	groupObj
 }
 
 type getGroupsResponse struct {
-	Pagination pagination  `json:"pagination"`
-	Results    []groupsObj `json:"results" binding:"required"`
+	Pagination pagination `json:"pagination"`
+	Results    []groupObj `json:"results" binding:"required"`
 }
 
 type assignPermissionsRequest struct {

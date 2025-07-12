@@ -79,7 +79,7 @@ func Test_CreateGroup(t *testing.T) {
 			createGroupResponse: createGroupResponse{
 				StatusCode: http.StatusCreated,
 				Content: (func() []byte {
-					marshal, _ := json.Marshal(getGroupResponse{groupsObj{
+					marshal, _ := json.Marshal(getGroupResponse{groupObj{
 						PK:         "random-uuid",
 						Name:       "example-group",
 						Attributes: groupAttributes{},

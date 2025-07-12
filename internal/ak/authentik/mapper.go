@@ -72,22 +72,43 @@ func mapToGetGroupByNameResponse(groups *getGroupsResponse) *ak.Group {
 }
 
 func mapToCreateOrUpdateUserResponse(user *getUserResponse) *ak.User {
+	var groups = []ak.Group{}
+
+	for _, group := range user.GroupsObj {
+		groups = append(groups, ak.Group{
+			PK:   group.PK,
+			Name: group.Name,
+		})
+	}
+
 	return &ak.User{
-		PK:       user.PK,
-		Username: user.Username,
-		Name:     user.Name,
-		Email:    user.Email,
-		Path:     user.Path,
-		IsActive: user.IsActive,
+		PK:          user.PK,
+		Username:    user.Username,
+		Name:        user.Name,
+		Email:       user.Email,
+		Path:        user.Path,
+		IsActive:    user.IsActive,
+		IsSuperuser: user.IsSuperuser,
 		Attributes: ak.UserAttributes{
 			UserType: user.Attributes.UserType,
 			Tenant:   user.Attributes.Tenant,
 		},
+		Groups: groups,
 	}
 }
 
 func mapToUsersGetResponse(users *getUsersResponse) *ak.User {
 	var userGetResponse ak.User
+	var groups = []ak.Group{}
+
+	for _, result := range users.Results {
+		for _, group := range result.GroupsObj {
+			groups = append(groups, ak.Group{
+				PK:   group.PK,
+				Name: group.Name,
+			})
+		}
+	}
 
 	for _, userResults := range users.Results {
 		userGetResponse.PK = userResults.PK
@@ -96,7 +117,10 @@ func mapToUsersGetResponse(users *getUsersResponse) *ak.User {
 		userGetResponse.Email = userResults.Email
 		userGetResponse.Path = userResults.Path
 		userGetResponse.IsActive = userResults.IsActive
+		userGetResponse.IsSuperuser = userResults.IsSuperuser
 		userGetResponse.Attributes.UserType = userResults.Attributes.UserType
+		userGetResponse.Attributes.Tenant = userResults.Attributes.Tenant
+		userGetResponse.Groups = groups
 	}
 
 	return &userGetResponse

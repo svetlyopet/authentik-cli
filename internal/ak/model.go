@@ -17,13 +17,15 @@ type GroupAttributes struct {
 }
 
 type User struct {
-	PK         int
-	Username   string
-	Name       string
-	Email      string
-	Path       string
-	IsActive   bool
-	Attributes UserAttributes
+	PK          int
+	Username    string
+	Name        string
+	Email       string
+	Path        string
+	IsActive    bool
+	IsSuperuser bool
+	Attributes  UserAttributes
+	Groups      []Group
 }
 
 type UserAttributes struct {
