@@ -7,6 +7,7 @@ import (
 	a "github.com/svetlyopet/authentik-cli/cmd/get/app"
 	g "github.com/svetlyopet/authentik-cli/cmd/get/group"
 	t "github.com/svetlyopet/authentik-cli/cmd/get/tenant"
+	u "github.com/svetlyopet/authentik-cli/cmd/get/user"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
 
@@ -26,6 +27,7 @@ Examples:
 	}
 
 	c.AddCommand(a.GetAppCmd())
+	c.AddCommand(u.GetUserCmd())
 	c.AddCommand(g.GetGroupCmd())
 	c.AddCommand(t.GetTenantCmd())
 

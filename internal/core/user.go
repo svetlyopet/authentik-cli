@@ -55,6 +55,15 @@ func CreateUser(username, name, surname, email, tenant string) (err error) {
 	return nil
 }
 
+func GetUserDetails(username string) (*User, error) {
+	user, err := ak.Repo.GetUserByUsername(username)
+	if err != nil {
+		return nil, err
+	}
+
+	return mapToGetUserDetails(user), nil
+}
+
 func DeleteUser(username string) (err error) {
 	user, err := ak.Repo.GetUserByUsername(username)
 	if err != nil {

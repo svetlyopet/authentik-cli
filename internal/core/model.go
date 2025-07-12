@@ -5,3 +5,9 @@ type Group struct {
 	Tenant string   `json:"tenant,omitempty" yaml:"tenant,omitempty"`
 	Roles  []string `json:"roles,omitempty" yaml:"roles,omitempty"`
 }
+
+type User struct {
+	Name     string `json:"name" yaml:"name"`
+	Email    string `json:"email" yaml:"email"`
+	IsActive bool   `json:"is_active" yaml:"is_active"`
+}

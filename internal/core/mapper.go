@@ -14,3 +14,11 @@ func mapToGetGroupDetails(group *ak.Group) *Group {
 		Roles:  roles,
 	}
 }
+
+func mapToGetUserDetails(user *ak.User) *User {
+	return &User{
+		Name:     user.Name,
+		Email:    user.Email,
+		IsActive: user.IsActive,
+	}
+}
