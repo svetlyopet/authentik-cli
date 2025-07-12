@@ -161,12 +161,13 @@ type assignPermissionsRequest struct {
 }
 
 type createUserRequest struct {
-	Username   string         `json:"username" binding:"required"`
-	Name       string         `json:"name" binding:"required"`
-	Email      string         `json:"email" binding:"required"`
-	Path       string         `json:"path" binding:"required"`
-	IsActive   bool           `json:"is_active" binding:"required"`
-	Attributes userAttributes `json:"attributes"`
+	Username    string         `json:"username" binding:"required"`
+	Name        string         `json:"name" binding:"required"`
+	Email       string         `json:"email" binding:"required"`
+	Path        string         `json:"path" binding:"required"`
+	IsActive    bool           `json:"is_active" binding:"required"`
+	IsSuperuser bool           `json:"is_superuser"`
+	Attributes  userAttributes `json:"attributes"`
 }
 
 type getUserResponse struct {

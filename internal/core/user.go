@@ -24,18 +24,22 @@ func CreateUser(username, name, surname, email, tenant string) (err error) {
 		if err != nil {
 			return customErrors.NewNotExists("tenant not found")
 		}
-		userPath = "tenant-admins"
+		userPath = tenant
 		userAttr.UserType = "tenant-admin"
 		userAttr.Tenant = tenant
+	} else {
+		userAttr.UserType = "global"
+		userAttr.Tenant = "global"
 	}
 
 	usr := ak.User{
-		Username:   username,
-		Name:       name,
-		Email:      email,
-		Path:       userPath,
-		IsActive:   true,
-		Attributes: userAttr,
+		Username:    username,
+		Name:        name,
+		Email:       email,
+		Path:        userPath,
+		IsActive:    true,
+		IsSuperuser: false,
+		Attributes:  userAttr,
 	}
 
 	user, err := ak.Repo.CreateUser(usr)

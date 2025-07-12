@@ -130,11 +130,12 @@ func (a *authentik) DeleteGroup(uuid string) error {
 
 func (a *authentik) CreateUser(usr ak.User) (*ak.User, error) {
 	createUserReq := createUserRequest{
-		Username: usr.Username,
-		Name:     usr.Name,
-		Email:    usr.Email,
-		Path:     usr.Path,
-		IsActive: usr.IsActive,
+		Username:    usr.Username,
+		Name:        usr.Name,
+		Email:       usr.Email,
+		Path:        usr.Path,
+		IsActive:    usr.IsActive,
+		IsSuperuser: usr.IsSuperuser,
 		Attributes: userAttributes{
 			UserType: usr.Attributes.UserType,
 			Tenant:   usr.Attributes.Tenant,
