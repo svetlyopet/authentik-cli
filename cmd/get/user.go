@@ -1,18 +1,14 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 	"github.com/svetlyopet/authentik-cli/internal/core"
-	"github.com/svetlyopet/authentik-cli/internal/logger"
-	"gopkg.in/yaml.v3"
 )
 
-func GetUserCmd() *cobra.Command {
-	var err error
+func getUserCmd() *cobra.Command {
 	var outputFormat string
 
 	c := &cobra.Command{
@@ -26,8 +22,9 @@ Examples:
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			err = GetUserDetailsWithFormat(name, outputFormat)
+			userDetails, err := core.GetUserDetails(name)
 			cobra.CheckErr(err)
+			outputDetailsWithFormat(userDetails, outputFormat)
 		},
 	}
 
@@ -37,31 +34,4 @@ Examples:
 	}
 
 	return c
-}
-
-func GetUserDetailsWithFormat(name, outputFormat string) error {
-	var userDetailsMarshaled []byte
-
-	userDetails, err := core.GetUserDetails(name)
-	if err != nil {
-		return err
-	}
-
-	if outputFormat == "json" {
-		userDetailsMarshaled, err = json.MarshalIndent(userDetails, "", "  ")
-		if err != nil {
-			return err
-		}
-	}
-
-	if outputFormat == "yaml" {
-		userDetailsMarshaled, err = yaml.Marshal(userDetails)
-		if err != nil {
-			return err
-		}
-	}
-
-	logger.LogObjectDetails(userDetailsMarshaled)
-
-	return nil
 }

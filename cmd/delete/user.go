@@ -8,7 +8,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/core"
 )
 
-func DeleteUserCmd() *cobra.Command {
+func deleteUserCmd() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "user",
 		Short: "Delete a user",

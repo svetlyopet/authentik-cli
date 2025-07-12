@@ -4,10 +4,6 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	a "github.com/svetlyopet/authentik-cli/cmd/delete/app"
-	g "github.com/svetlyopet/authentik-cli/cmd/delete/group"
-	t "github.com/svetlyopet/authentik-cli/cmd/delete/tenant"
-	u "github.com/svetlyopet/authentik-cli/cmd/delete/user"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
 
@@ -27,10 +23,10 @@ Examples:
 		},
 	}
 
-	c.AddCommand(t.DeleteTenantCmd())
-	c.AddCommand(u.DeleteUserCmd())
-	c.AddCommand(g.DeleteGroupCmd())
-	c.AddCommand(a.DeleteAppCmd())
+	c.AddCommand(deleteTenantCmd())
+	c.AddCommand(deleteUserCmd())
+	c.AddCommand(deleteGroupCmd())
+	c.AddCommand(deleteAppCmd())
 
 	return c
 }

@@ -1,18 +1,14 @@
 package cmd
 
 import (
-	"encoding/json"
 	"fmt"
 
 	"github.com/spf13/cobra"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
-	"github.com/svetlyopet/authentik-cli/internal/logger"
 	"github.com/svetlyopet/authentik-cli/internal/tenant"
-	"gopkg.in/yaml.v3"
 )
 
-func GetTenantCmd() *cobra.Command {
-	var err error
+func getTenantCmd() *cobra.Command {
 	var outputFormat string
 
 	c := &cobra.Command{
@@ -28,8 +24,9 @@ Examples:
 		Args: cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			name := args[0]
-			err = GetTenantWithFormat(name, outputFormat)
+			tenantDetails, err := tenant.Get(name)
 			cobra.CheckErr(err)
+			outputDetailsWithFormat(tenantDetails, outputFormat)
 		},
 	}
 
@@ -39,31 +36,4 @@ Examples:
 	}
 
 	return c
-}
-
-func GetTenantWithFormat(name, outputFormat string) error {
-	var tenantDetailsMarshaled []byte
-
-	tenantDetails, err := tenant.Get(name)
-	if err != nil {
-		return err
-	}
-
-	if outputFormat == "json" {
-		tenantDetailsMarshaled, err = json.MarshalIndent(tenantDetails, "", "  ")
-		if err != nil {
-			return err
-		}
-	}
-
-	if outputFormat == "yaml" {
-		tenantDetailsMarshaled, err = yaml.Marshal(tenantDetails)
-		if err != nil {
-			return err
-		}
-	}
-
-	logger.LogObjectDetails(tenantDetailsMarshaled)
-
-	return nil
 }

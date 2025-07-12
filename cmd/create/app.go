@@ -17,7 +17,7 @@ var oidcConsentType string
 var oidcRedirectUrisStrict []string
 var oidcRedirectUrisRegex []string
 
-func CreateAppCmd() *cobra.Command {
+func createAppCmd() *cobra.Command {
 	var err error
 
 	c := &cobra.Command{

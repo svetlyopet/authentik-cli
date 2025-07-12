@@ -9,7 +9,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/core"
 )
 
-func CreateUserCmd() *cobra.Command {
+func createUserCmd() *cobra.Command {
 	var name string
 	var surname string
 	var email string

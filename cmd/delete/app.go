@@ -8,7 +8,7 @@ import (
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
 
-func DeleteAppCmd() *cobra.Command {
+func deleteAppCmd() *cobra.Command {
 	c := &cobra.Command{
 		Use:   "app",
 		Short: "Delete an app",
