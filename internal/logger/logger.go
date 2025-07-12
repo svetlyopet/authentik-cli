@@ -9,5 +9,5 @@ func LogObjectChange(targetObjectType, action, targetObjectName string) {
 }
 
 func LogObjectDetails(resourceData []byte) {
-	fmt.Printf("%s", string(resourceData))
+	fmt.Printf("%s\n", string(resourceData))
 }
