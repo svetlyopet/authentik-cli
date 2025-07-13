@@ -26,7 +26,9 @@ Examples:
 			name := args[0]
 			tenantDetails, err := tenant.Get(name)
 			cobra.CheckErr(err)
-			outputDetailsWithFormat(tenantDetails, outputFormat)
+
+			err = outputDetailsWithFormat(tenantDetails, outputFormat)
+			cobra.CheckErr(err)
 		},
 	}
 

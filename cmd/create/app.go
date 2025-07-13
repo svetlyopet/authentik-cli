@@ -65,15 +65,15 @@ func createApp(name, providerType string) (err error) {
 			return err
 		}
 	case constants.ProviderTypeLDAP:
-		return fmt.Errorf("LDAP provider is not supported yet")
+		return fmt.Errorf("provider type LDAP is not supported yet")
 	case constants.ProviderTypeSAML:
-		return fmt.Errorf("SAML provider is not supported yet")
+		return fmt.Errorf("provider type SAML is not supported yet")
 	case constants.ProviderTypeProxy:
-		return fmt.Errorf("Proxy provider is not supported yet")
+		return fmt.Errorf("provider type Proxy is not supported yet")
 	case constants.ProviderTypeRAC:
-		return fmt.Errorf("RAC provider is not supported yet")
+		return fmt.Errorf("provider type RAC is not supported yet")
 	case constants.ProviderTypeSCIM:
-		return fmt.Errorf("SCIM provider is not supported yet")
+		return fmt.Errorf("provider type SCIM is not supported yet")
 	default:
 		return fmt.Errorf("%s is not a supported provider type", providerType)
 	}

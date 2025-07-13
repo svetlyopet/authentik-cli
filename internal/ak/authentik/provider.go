@@ -55,7 +55,7 @@ func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcPr
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
@@ -76,7 +76,7 @@ func (a *authentik) DeleteProvider(id int) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode == http.StatusNotFound {
 		return customErrors.NewNotExists("provider not found")
@@ -95,7 +95,7 @@ func (a *authentik) GetOidcProvider(id int) (*ak.OidcProvider, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode == http.StatusNotFound {
 		return nil, customErrors.NewNotExists("provider not found")

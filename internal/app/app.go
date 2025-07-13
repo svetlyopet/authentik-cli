@@ -25,8 +25,6 @@ func CreateOidc(name, slug, oidcClientType, oidcConsentType string, oidcEncryptT
 }
 
 func Get(name string) (*App, error) {
-	var appDetails = &App{}
-
 	application, err := core.GetApplication(name)
 	if err != nil {
 		return nil, err
@@ -39,12 +37,10 @@ func Get(name string) (*App, error) {
 			return nil, err
 		}
 
-		appDetails = mapToGetAppWithOidcProvider(application, *prov)
-	default:
-		return nil, fmt.Errorf("%s is not a supported provider type", application.ProviderType)
+		return mapToGetAppWithOidcProvider(application, *prov), nil
 	}
 
-	return appDetails, nil
+	return nil, fmt.Errorf("%s is not a supported provider type", application.ProviderType)
 }
 
 func Delete(name string) error {

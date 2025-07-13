@@ -38,7 +38,7 @@ func Set() error {
 		fmt.Println("Error creating file:", err)
 		return err
 	}
-	defer file.Close()
+	defer file.Close() //nolint
 
 	yamlConfig, err := yaml.Marshal(&c)
 	if err != nil {

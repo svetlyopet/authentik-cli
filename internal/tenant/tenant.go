@@ -13,10 +13,10 @@ import (
 )
 
 func Create(name string) (err error) {
-	role := &ak.Role{}
 	roleName := fmt.Sprintf(constants.TenantAdminRbacRoleNamePattern, name)
 
-	if role, err = rbac.GetRoleByName(roleName); err != nil {
+	role, err := rbac.GetRoleByName(roleName)
+	if err != nil {
 		role, err = rbac.CreateRole(roleName)
 		if err != nil {
 			return err

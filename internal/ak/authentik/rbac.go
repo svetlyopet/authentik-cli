@@ -34,7 +34,7 @@ func (a *authentik) CreateRole(name string) (*ak.Role, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
@@ -58,7 +58,7 @@ func (a *authentik) GetRoleByName(name string) (*ak.Role, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
@@ -107,7 +107,7 @@ func (a *authentik) AssignViewPermissionsToTenantRole(rolePK string) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
@@ -122,7 +122,7 @@ func (a *authentik) DeleteRole(uuid string) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)

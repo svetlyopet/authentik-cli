@@ -44,7 +44,7 @@ func (a *authentik) CreateGroup(name string, roles []string, attributes ak.Group
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
@@ -68,7 +68,7 @@ func (a *authentik) GetGroupByName(name string) (*ak.Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
@@ -97,7 +97,7 @@ func (a *authentik) GetGroup(uuid string) (*ak.Group, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
@@ -118,11 +118,12 @@ func (a *authentik) DeleteGroup(uuid string) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete group: %s", string(errBody)))
+		returnErrBody := fmt.Sprintf("delete group: %s", string(errBody))
+		return customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	return nil
@@ -152,10 +153,11 @@ func (a *authentik) CreateUser(usr ak.User) (*ak.User, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create user: %s", errBody))
+		returnErrBody := fmt.Sprintf("create user: %s", errBody)
+		return nil, customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	var userResp getUserResponse
@@ -182,10 +184,11 @@ func (a *authentik) AddUserToGroup(userPK int, groupUuid string) error {
 		return err
 	}
 
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("%s", errBody))
+		returnErrBody := fmt.Sprintf("add user to group: %s", errBody)
+		return customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	return nil
@@ -200,14 +203,15 @@ func (a *authentik) GetUserByUsername(username string) (*ak.User, error) {
 		return nil, err
 	}
 
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode == http.StatusNotFound {
 		return nil, customErrors.NewNotExists("user not found")
 	}
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get user by username: %s", errBody))
+		returnErrBody := fmt.Sprintf("get user by username: %s", errBody)
+		return nil, customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	var usersResp getUsersResponse
@@ -231,11 +235,12 @@ func (a *authentik) DeleteUser(userPK string) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete user: %s", string(errBody)))
+		returnErrBody := fmt.Sprintf("delete user: %s", string(errBody))
+		return customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	return nil
@@ -259,11 +264,12 @@ func (a *authentik) CreateApplication(name, slug string, providerPK int) (*ak.Ap
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusCreated {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create application: %s", string(errBody)))
+		returnErrBody := fmt.Sprintf("create application: %s", errBody)
+		return nil, customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	var createApplicationResp getApplicationResponse
@@ -283,11 +289,12 @@ func (a *authentik) GetApplicationByName(name string) (*ak.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get application: %s", string(errBody)))
+		returnErrBody := fmt.Sprintf("get application: %s", errBody)
+		return nil, customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	var getApplicationsResp getApplicationsResponse
@@ -309,7 +316,7 @@ func (a *authentik) DeleteApplication(slug string) error {
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode == http.StatusNotFound {
 		return customErrors.NewNotExists("application not found")
@@ -317,7 +324,8 @@ func (a *authentik) DeleteApplication(slug string) error {
 
 	if response.StatusCode != http.StatusNoContent {
 		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete application: %s", string(errBody)))
+		returnErrBody := fmt.Sprintf("delete application: %s", errBody)
+		return customErrors.NewUnexpectedResult(returnErrBody)
 	}
 
 	return nil

@@ -19,7 +19,8 @@ Examples:
   # Delete a tenant
   %s delete tenant example-tenant`, constants.CmdName),
 		Run: func(cmd *cobra.Command, args []string) {
-			cmd.Help()
+			err := cmd.Help()
+			cobra.CheckErr(err)
 		},
 	}
 

@@ -24,7 +24,9 @@ Examples:
 			name := args[0]
 			userDetails, err := core.GetUserDetails(name)
 			cobra.CheckErr(err)
-			outputDetailsWithFormat(userDetails, outputFormat)
+
+			err = outputDetailsWithFormat(userDetails, outputFormat)
+			cobra.CheckErr(err)
 		},
 	}
 

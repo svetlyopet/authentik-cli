@@ -19,7 +19,7 @@ func (a *authentik) GetFlows() ([]ak.Flow, error) {
 	if err != nil {
 		return nil, err
 	}
-	defer response.Body.Close()
+	defer response.Body.Close() //nolint
 
 	if response.StatusCode != http.StatusOK {
 		errBody, _ := io.ReadAll(response.Body)
