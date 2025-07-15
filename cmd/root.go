@@ -25,17 +25,12 @@ and enable multi-tenancy and automation`, constants.CmdName),
 }
 
 func Execute() {
+	loadConfig()
+
 	err := rootCmd.Execute()
 	if err != nil {
 		os.Exit(1)
 	}
-}
-
-func init() {
-	cobra.OnInitialize(initConfig)
-	addSubcommands()
-
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%s)", constants.CfgFilename))
 }
 
 func addSubcommands() {
@@ -45,7 +40,14 @@ func addSubcommands() {
 	rootCmd.AddCommand(g.GetCmd())
 }
 
-func initConfig() {
+func loadConfig() {
+	cobra.OnInitialize(readCfgFile)
+	addSubcommands()
+
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", fmt.Sprintf("config file (default is $HOME/%s)", constants.CfgFilename))
+}
+
+func readCfgFile() {
 	if cfgFile != "" {
 		// Use config file from the flag.
 		viper.SetConfigFile(cfgFile)
