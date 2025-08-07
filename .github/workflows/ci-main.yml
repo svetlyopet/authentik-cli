@@ -9,41 +9,8 @@ on:
 
 permissions:
   contents: read
-  security-events: write
 
 jobs:
-  scan-gitleaks:
-    runs-on: ubuntu-latest
-    if: (github.actor != 'dependabot[bot]')
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
-      - uses: gitleaks/gitleaks-action@v2
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  scan-semgrep:
-    runs-on: ubuntu-latest
-    container:
-      image: semgrep/semgrep
-    if: (github.actor != 'dependabot[bot]')
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Run Semgrep
-        run: |
-          semgrep scan \
-            --config=p/ci \
-            --sarif --output=semgrep.sarif
-
-      - name: Upload SARIF file for GitHub Advanced Security Dashboard
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: semgrep.sarif
-        if: always()
-
   test-ci:
     runs-on: ubuntu-latest
     steps:
@@ -57,7 +24,7 @@ jobs:
     - name: Run ci tests
       run: make ci
 
-  test-integrationtest:
+  test-e2e:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

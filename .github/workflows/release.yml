@@ -1,0 +1,37 @@
+name: authentik-cli-release
+
+on:
+  push:
+    tags:
+      - 'v*'  # Run when pushing a version tag like v1.0.0
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+            go-version-file: "go.mod"
+
+      - name: Extract version tag
+        id: vars
+        run: |
+          echo "tag=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Build release binaries
+        run: make release TAG=${{ steps.vars.outputs.tag }}
+
+      - name: Upload release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.vars.outputs.tag }}
+          files: dist/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

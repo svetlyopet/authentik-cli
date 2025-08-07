@@ -1,10 +1,19 @@
 SHELL=/bin/bash -e -o pipefail
 PWD = $(shell pwd)
 
-out:
-	@mkdir -p out
+BINARY_NAME=authentik-cli
 
-git-hooks:
+OUT_DIR=out
+DIST_DIR=dist
+
+PLATFORMS=linux darwin windows
+ARCHS=amd64 arm64
+
+
+out:
+	@mkdir -p $(OUT_DIR)
+
+git-hooks: ## Setup githooks
 	@git config --local core.hooksPath .githooks/
 
 download: ## Downloads dependencies
@@ -24,19 +33,40 @@ mocks: ## Generates mocks
 test-build: ## Tests whether the code compiles
 	@go build -o /dev/null ./...
 
-build: out/bin ## Builds the binary
+build: $(OUT_DIR)/bin ## Builds the binary
 
-.PHONY: out/bin
-out/bin:
-	@mkdir -pv "$(@)" && go build -ldflags="-w -s" -o "$(@)" ./...
+.PHONY: $(OUT_DIR)/bin
+$(OUT_DIR)/bin:
+	@mkdir -p "$(@)" && go build -ldflags="-w -s" -o "$(@)" ./...
+
+dist:
+	@mkdir -p $(DIST_DIR)
+
+# Windows ARM64 not officially supported/stable
+release: dist ## Build release binaries
+	@if [ -z "$(TAG)" ]; then \
+		echo "Release tag not set."; \
+		echo "Set by passing TAG environment variable to the make release command."; \
+		echo "Exiting..."; \
+		exit 1; \
+	fi;
+	@for GOOS in $(PLATFORMS); do \
+		for GOARCH in $(ARCHS); do \
+			if [ "$$GOOS" = "windows" ] && [ "$$GOARCH" = "arm64" ]; then continue; fi; \
+			if [ "$$GOOS" = "windows" ]; then EXT=".exe"; else EXT=""; fi; \
+			RELEASE_BIN=$(DIST_DIR)/$(BINARY_NAME)-$$GOOS-$$GOARCH-$$TAG$$EXT; \
+			echo "Building $$RELEASE_BIN..."; \
+			GOOS=$$GOOS GOARCH=$$GOARCH go build -ldflags="-s -w" -o $$RELEASE_BIN .; \
+		done \
+	done
 
 lint: fmt download ## Lints all code with golangci-lint
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run
 
-lint-reports: out/lint.xml
+lint-reports: $(OUT_DIR)/lint.xml
 
-.PHONY: out/lint.xml
-out/lint.xml: out download
+.PHONY: $(OUT_DIR)/lint.xml
+$(OUT_DIR)/lint.xml: out download
 	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --out-format checkstyle | tee "$(@)"
 
 govulncheck: ## Vulnerability detection using govulncheck
@@ -56,20 +86,20 @@ e2e-ci: ## Run e2e tests in CI
 e2e-cleanup: # Cleanup e2e environement
 	@$(PWD)/ci/integration_tests/ak_bootstrap.sh destroy
 
-coverage: out/report.json ## Displays coverage per func on cli
-	@go tool cover -func=out/cover.out
+coverage: $(OUT_DIR)/report.json ## Displays coverage per func on cli
+	@go tool cover -func=$(OUT_DIR)/cover.out
 
-html-coverage: out/report.json ## Displays the coverage results in the browser
-	@go tool cover -html=out/cover.out
+html-coverage: $(OUT_DIR)/report.json ## Displays the coverage results in the browser
+	@go tool cover -html=$(OUT_DIR)/cover.out
 
-test-reports: out/report.json
+test-reports: $(OUT_DIR)/report.json
 
-.PHONY: out/report.json
-out/report.json: out
-	@go test -count 1 ./... -coverprofile=out/cover.out --json | tee "$(@)"
+.PHONY: $(OUT_DIR)/report.json
+$(OUT_DIR)/report.json: out
+	@go test -count 1 ./... -coverprofile=$(OUT_DIR)/cover.out --json | tee "$(@)"
 
-clean: ## Cleans up output files
-	@rm -rf bin out
+clean: ## Cleans up output and release files
+	@rm -rf $(DIST_DIR) $(OUT_DIR)
 
 define make-go-dependency
   # target template for go tools, can be referenced e.g. via /bin/<tool>
