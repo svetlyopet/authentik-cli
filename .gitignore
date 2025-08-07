@@ -32,8 +32,8 @@ ci/integration_tests/certs
 ci/integration_tests/custom-templates
 ci/integration_tests/media
 
-# Local bin directory
-bin/
+# Output bin directory
+out/
 
 # IDE configurations
 .vscode/
