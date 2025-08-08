@@ -2,6 +2,15 @@
 
 See the [README for running Authentik locally](./ci/integration_tests/README.md)
 
+### Setup pre-commit git hooks
+
+Install [gitleaks](https://github.com/gitleaks/gitleaks) locally.
+
+Setup the pre-commit hook
+```bash
+make git-hooks
+```
+
 ### Mock generation
 
 Generate mocks the interfaces
@@ -9,7 +18,7 @@ Generate mocks the interfaces
 make mocks
 ```
 
-### Unit tests
+### Run unit tests
 
 Execute tests and save results to a coverage file(optional)
 ```bash
