@@ -1,0 +1,19 @@
+#!/bin/bash
+
+function secretsscan() {
+  gitleaks git --verbose --pre-commit
+}
+
+
+# inform about failed pre-commit hook
+function failed {
+  echo ''
+  echo -e "pre-commit hook failed... You cannot commit!"
+  echo ''
+
+  exit 1
+}
+
+trap 'failed' ERR
+
+secretsscan

@@ -9,14 +9,10 @@ function lint() {
   fi
 }
 
-function secretsscan() {
-  gitleaks git -v --staged
-}
-
-# inform about failed pre-commit hook
+# inform about failed pre-push hook
 function failed {
   echo ''
-  echo -e "pre-commit hook failed... You can not push!"
+  echo -e "pre-push hook failed... You cannot push!"
   echo ''
 
   exit 1
@@ -25,4 +21,3 @@ function failed {
 trap 'failed' ERR
 
 lint
-secretsscan
