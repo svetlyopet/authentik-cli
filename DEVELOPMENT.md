@@ -2,11 +2,11 @@
 
 See the [README for running Authentik locally](./ci/integration_tests/README.md)
 
-### Setup pre-commit git hooks
+### Setup git hooks
 
 Install [gitleaks](https://github.com/gitleaks/gitleaks) locally.
 
-Setup the pre-commit hook
+Setup the git hooks
 ```bash
 make git-hooks
 ```
