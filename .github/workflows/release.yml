@@ -3,7 +3,7 @@ name: authentik-cli-release
 on:
   push:
     tags:
-      - 'v*'  # Run when pushing a version tag like v1.0.0
+      - 'v*.*.*'  # Run when pushing a version tag like v1.0.0
 
 permissions:
   contents: write
@@ -23,10 +23,11 @@ jobs:
       - name: Extract version tag
         id: vars
         run: |
-          echo "tag=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "version=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build release binaries
-        run: make release TAG=${{ steps.vars.outputs.tag }}
+        run: make release VERSION=${{ steps.vars.outputs.version }}
 
       - name: Upload release assets
         uses: softprops/action-gh-release@v2

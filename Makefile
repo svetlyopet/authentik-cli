@@ -43,16 +43,16 @@ dist:
 	@mkdir -p $(DIST_DIR)
 
 release: dist ## Build release binaries
-	@if [ -z "$(TAG)" ]; then \
-		echo "Release tag not set."; \
-		echo "Set by passing TAG environment variable to the make release command."; \
+	@if [ -z "$(VERSION)" ]; then \
+		echo "Release version not set."; \
+		echo "Set by passing VERSION environment variable to the make release command."; \
 		echo "Exiting..."; \
 		exit 1; \
 	fi;
 	@cd $(DIST_DIR); \
 	for GOOS in $(PLATFORMS); do \
 		for GOARCH in $(ARCHS); do \
-			RELEASE_BIN=$(BINARY_NAME)-$$GOOS-$$GOARCH-$$TAG; \
+			RELEASE_BIN=$(BINARY_NAME)-$$GOOS-$$GOARCH-$$VERSION; \
 			RELEASE_TAR_GZ=$$RELEASE_BIN.tar.gz; \
 			echo "Building $$RELEASE_BIN..."; \
 			GOOS=$$GOOS GOARCH=$$GOARCH go build -ldflags="-s -w" -o $$RELEASE_BIN ../.; \
