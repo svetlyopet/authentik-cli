@@ -6,7 +6,7 @@ BINARY_NAME=authentik-cli
 OUT_DIR=out
 DIST_DIR=dist
 
-PLATFORMS=linux darwin windows
+PLATFORMS=linux darwin
 ARCHS=amd64 arm64
 
 
@@ -42,7 +42,6 @@ $(OUT_DIR)/bin:
 dist:
 	@mkdir -p $(DIST_DIR)
 
-# Windows ARM64 not officially supported/stable
 release: dist ## Build release binaries
 	@if [ -z "$(TAG)" ]; then \
 		echo "Release tag not set."; \
@@ -50,13 +49,18 @@ release: dist ## Build release binaries
 		echo "Exiting..."; \
 		exit 1; \
 	fi;
-	@for GOOS in $(PLATFORMS); do \
+	@cd $(DIST_DIR); \
+	for GOOS in $(PLATFORMS); do \
 		for GOARCH in $(ARCHS); do \
-			if [ "$$GOOS" = "windows" ] && [ "$$GOARCH" = "arm64" ]; then continue; fi; \
-			if [ "$$GOOS" = "windows" ]; then EXT=".exe"; else EXT=""; fi; \
-			RELEASE_BIN=$(DIST_DIR)/$(BINARY_NAME)-$$GOOS-$$GOARCH-$$TAG$$EXT; \
+			RELEASE_BIN=$(BINARY_NAME)-$$GOOS-$$GOARCH-$$TAG; \
+			RELEASE_TAR_GZ=$$RELEASE_BIN.tar.gz; \
 			echo "Building $$RELEASE_BIN..."; \
-			GOOS=$$GOOS GOARCH=$$GOARCH go build -ldflags="-s -w" -o $$RELEASE_BIN .; \
+			GOOS=$$GOOS GOARCH=$$GOARCH go build -ldflags="-s -w" -o $$RELEASE_BIN ../.; \
+			echo "Compressing into $$RELEASE_TAR_GZ file..."; \
+			tar -czf $$RELEASE_TAR_GZ $$RELEASE_BIN; \
+			rm -f $$RELEASE_BIN; \
+			echo "Calculating SHA256 checksum..."; \
+			sha256sum $$RELEASE_TAR_GZ >> $(BINARY_NAME)-checksums.txt; \
 		done \
 	done
 
