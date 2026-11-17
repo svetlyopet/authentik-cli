@@ -39,6 +39,7 @@ build_ak_bin() {
   $GO_BIN build -o bin/ak .
   if [ $? -ne 0 ]; then
     echo -e "Building binary ${RED}FAILED${ENDCOLOR}"
+    exit 1
   fi
   echo -e "${GREEN}DONE${ENDCOLOR}"
   echo -e "Built binary ${YELLOW}$AK_CLI_BIN${ENDCOLOR}"
@@ -144,7 +145,7 @@ test_result() {
 }
 
 check_authentik_status() {
-  local max_retries=10
+  local max_retries=30
   local retry_count=0
   local retry_interval=5
 
@@ -168,8 +169,37 @@ check_authentik_status() {
   exit 1
 }
 
+wait_for_default_flows() {
+  # Since authentik 2025.8 the worker applies the default blueprints in the
+  # background, so the API can be ready before the default flows (and the
+  # bootstrap token) exist.
+  local slugs=("default-authentication-flow" "default-provider-authorization-explicit-consent" "default-invalidation-flow")
+  local max_retries=30
+  local retry_interval=5
+
+  echo "Waiting for the default flows... "
+
+  for slug in "${slugs[@]}"; do
+    local retry_count=0
+    until curl -sf -H "Authorization: Bearer $AUTHENTIK_BOOTSTRAP_TOKEN" \
+      "${AUTHENTIK_URL}/api/v3/flows/instances/${slug}/" | grep -Eq "\"slug\": ?\"${slug}\""; do
+      retry_count=$((retry_count + 1))
+      if [[ $retry_count -ge $max_retries ]]; then
+        echo -e "${RED}Flow $slug not found after $max_retries retries. Aborting...${ENDCOLOR}"
+        exit 1
+      fi
+      echo -e "${YELLOW}Flow $slug not found yet. Retrying in $retry_interval seconds...${ENDCOLOR}"
+      sleep $retry_interval
+    done
+  done
+
+  echo -e "Default flows are ${GREEN}available${ENDCOLOR}"
+  echo
+}
+
 main() {
   check_authentik_status
+  wait_for_default_flows
   build_ak_bin
   create_config
   create_tenant

@@ -1,116 +1,104 @@
 package authentik
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
+	"context"
+
+	api "goauthentik.io/api/v3"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
-	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
-)
-
-const (
-	providersOAuth2Path             = "%s/api/v3/providers/oauth2/"
-	providersOAuth2UpdateDeletePath = "%s/api/v3/providers/oauth2/%d/"
-	providersAllPath                = "%s/api/v3/providers/all/"
-	providersAllDeletePath          = "%s/api/v3/providers/all/%d/"
 )
 
 func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcProvider, error) {
-	var redirectUris []oidcRedirectUri
-	for _, redirectUri := range oidcProvider.RedirectUris {
-		redirectUris = append(redirectUris, oidcRedirectUri{
-			MatchingMode: redirectUri.MatchingMode,
-			Url:          redirectUri.Url,
-		})
-	}
-
-	createOrUpdateOidcProviderReq := createOrUpdateOidcProviderRequest{
-		Name:                 oidcProvider.Name,
-		AuthenticationFlow:   oidcProvider.AuthenticationFlow,
-		AuthorizationFlow:    oidcProvider.AuthorizationFlow,
-		InvalidationFlow:     oidcProvider.InvalidationFlow,
-		PropertyMappings:     oidcProvider.PropertyMappings,
-		ClientType:           oidcProvider.ClientType,
-		AccessCodeValidity:   oidcProvider.AccessCodeValidity,
-		AccessTokenValidity:  oidcProvider.AccessTokenValidity,
-		RefreshTokenValidity: oidcProvider.RefreshTokenValidity,
-		SigningKey:           oidcProvider.SigningKey,
-		EncryptionKey:        oidcProvider.EncryptionKey,
-		RedirectUris:         redirectUris,
-		SubMode:              oidcProvider.SubMode,
-		IssuerMode:           oidcProvider.IssuerMode,
-	}
-
-	createOrUpdateOidcProviderRequestBytes, err := json.Marshal(createOrUpdateOidcProviderReq)
-	if err != nil {
+	if err := a.preflightCheck(); err != nil {
 		return nil, err
 	}
 
-	response, err := a.doRequest(http.MethodPost,
-		fmt.Sprintf(providersOAuth2Path, a.url),
-		bytes.NewBuffer(createOrUpdateOidcProviderRequestBytes))
+	redirectUris := make([]api.RedirectURIRequest, 0, len(oidcProvider.RedirectUris))
+	for _, uri := range oidcProvider.RedirectUris {
+		redirectUris = append(redirectUris, *api.NewRedirectURIRequest(api.MatchingModeEnum(uri.MatchingMode), uri.Url))
+	}
+
+	req := api.NewOAuth2ProviderRequest(
+		oidcProvider.Name,
+		oidcProvider.AuthorizationFlow,
+		oidcProvider.InvalidationFlow,
+		redirectUris,
+	)
+	if oidcProvider.AuthenticationFlow != "" {
+		req.SetAuthenticationFlow(oidcProvider.AuthenticationFlow)
+	}
+	if len(oidcProvider.PropertyMappings) > 0 {
+		req.SetPropertyMappings(oidcProvider.PropertyMappings)
+	}
+	if oidcProvider.ClientType != "" {
+		req.SetClientType(api.ClientTypeEnum(oidcProvider.ClientType))
+	}
+	if oidcProvider.AccessCodeValidity != "" {
+		req.SetAccessCodeValidity(oidcProvider.AccessCodeValidity)
+	}
+	if oidcProvider.AccessTokenValidity != "" {
+		req.SetAccessTokenValidity(oidcProvider.AccessTokenValidity)
+	}
+	if oidcProvider.RefreshTokenValidity != "" {
+		req.SetRefreshTokenValidity(oidcProvider.RefreshTokenValidity)
+	}
+	if oidcProvider.SigningKey != "" {
+		req.SetSigningKey(oidcProvider.SigningKey)
+	}
+	if oidcProvider.EncryptionKey != "" {
+		req.SetEncryptionKey(oidcProvider.EncryptionKey)
+	}
+	if oidcProvider.SubMode != "" {
+		req.SetSubMode(api.SubModeEnum(oidcProvider.SubMode))
+	}
+	if oidcProvider.IssuerMode != "" {
+		req.SetIssuerMode(api.IssuerModeEnum(oidcProvider.IssuerMode))
+	}
+
+	provider, resp, err := a.client.ProvidersAPI.ProvidersOauth2Create(context.Background()).
+		OAuth2ProviderRequest(*req).
+		Execute()
 	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close() //nolint
-
-	if response.StatusCode != http.StatusCreated {
-		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create oidc provider: %s", string(errBody)))
+		return nil, apiError("create oidc provider", resp, err)
 	}
 
-	var oidcProvidersResp getOidcProviderResponse
-	err = json.NewDecoder(response.Body).Decode(&oidcProvidersResp)
-	if err != nil {
-		return nil, err
-	}
-
-	return mapToGetOidcProviderResponse(&oidcProvidersResp), nil
+	return mapOidcProvider(provider), nil
 }
 
-func (a *authentik) DeleteProvider(id int) error {
-	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(providersAllDeletePath, a.url, id), nil)
+func (a *authentik) DeleteProvider(pk int) error {
+	const op = "delete provider"
+	if err := a.preflightCheck(); err != nil {
+		return err
+	}
+
+	id, err := toInt32(op, pk)
 	if err != nil {
 		return err
 	}
-	defer response.Body.Close() //nolint
 
-	if response.StatusCode == http.StatusNotFound {
-		return customErrors.NewNotExists("provider not found")
-	}
-
-	if response.StatusCode != http.StatusNoContent {
-		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete provider: %s", string(errBody)))
+	resp, err := a.client.ProvidersAPI.ProvidersAllDestroy(context.Background(), id).Execute()
+	if err != nil {
+		return apiError(op, resp, err)
 	}
 
 	return nil
 }
 
-func (a *authentik) GetOidcProvider(id int) (*ak.OidcProvider, error) {
-	response, err := a.doRequest(http.MethodGet, fmt.Sprintf(providersOAuth2UpdateDeletePath, a.url, id), nil)
-	if err != nil {
+func (a *authentik) GetOidcProvider(pk int) (*ak.OidcProvider, error) {
+	const op = "get oidc provider"
+	if err := a.preflightCheck(); err != nil {
 		return nil, err
 	}
-	defer response.Body.Close() //nolint
 
-	if response.StatusCode == http.StatusNotFound {
-		return nil, customErrors.NewNotExists("provider not found")
-	}
-
-	if response.StatusCode != http.StatusOK {
-		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("get oidc provider: %s", string(errBody)))
-	}
-
-	var getOidcProviderResp getOidcProviderResponse
-	err = json.NewDecoder(response.Body).Decode(&getOidcProviderResp)
+	id, err := toInt32(op, pk)
 	if err != nil {
 		return nil, err
 	}
 
-	return mapToGetOidcProviderResponse(&getOidcProviderResp), nil
+	provider, resp, err := a.client.ProvidersAPI.ProvidersOauth2Retrieve(context.Background(), id).Execute()
+	if err != nil {
+		return nil, apiError(op, resp, err)
+	}
+
+	return mapOidcProvider(provider), nil
 }

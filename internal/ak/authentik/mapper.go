@@ -1,225 +1,165 @@
 package authentik
 
 import (
-	"fmt"
+	api "goauthentik.io/api/v3"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
 )
 
-func mapToCreateOrUpdateRoleResponse(role *getRoleResponse) *ak.Role {
+// Keys of the custom attributes the CLI stores on authentik users and groups.
+const (
+	attrTenant   = "tenant"
+	attrUserType = "userType"
+)
+
+func groupAttributesToAPI(attrs ak.GroupAttributes) map[string]interface{} {
+	m := map[string]interface{}{}
+	if attrs.Tenant != "" {
+		m[attrTenant] = attrs.Tenant
+	}
+	return m
+}
+
+func userAttributesToAPI(attrs ak.UserAttributes) map[string]interface{} {
+	m := map[string]interface{}{}
+	if attrs.UserType != "" {
+		m[attrUserType] = attrs.UserType
+	}
+	if attrs.Tenant != "" {
+		m[attrTenant] = attrs.Tenant
+	}
+	return m
+}
+
+// stringAttr returns attrs[key] when it holds a string, or "" otherwise.
+func stringAttr(attrs map[string]interface{}, key string) string {
+	s, _ := attrs[key].(string)
+	return s
+}
+
+func mapRole(role *api.Role) *ak.Role {
 	return &ak.Role{
-		PK:   role.PK,
+		PK:   role.Pk,
 		Name: role.Name,
 	}
 }
 
-func mapToGetRoleByNameResponse(roles *getRolesResponse) *ak.Role {
-	res := &ak.Role{}
-	for _, role := range roles.Results {
-		res = &ak.Role{
-			PK:   role.PK,
-			Name: role.Name,
-		}
-	}
-
-	return res
-}
-
-func mapToCreateOrUpdateGroupResponse(group *getGroupResponse) *ak.Group {
+func mapGroup(group *api.Group) *ak.Group {
 	return &ak.Group{
-		PK:   group.PK,
+		PK:   group.Pk,
 		Name: group.Name,
 		GroupAttributes: ak.GroupAttributes{
-			Tenant: group.Attributes.Tenant,
+			Tenant: stringAttr(group.Attributes, attrTenant),
 		},
 	}
 }
 
-func mapToGetGroupResponse(group *getGroupResponse) *ak.Group {
-	var roles = []ak.Role{}
-
-	for _, role := range group.RolesObj {
-		roles = append(roles, ak.Role{
-			PK:   role.PK,
-			Name: role.Name,
-		})
+func mapGroupWithRoles(group *api.Group) *ak.Group {
+	g := mapGroup(group)
+	g.Roles = make([]ak.Role, 0, len(group.RolesObj))
+	for i := range group.RolesObj {
+		g.Roles = append(g.Roles, *mapRole(&group.RolesObj[i]))
 	}
-
-	return &ak.Group{
-		PK:   group.PK,
-		Name: group.Name,
-		GroupAttributes: ak.GroupAttributes{
-			Tenant: group.Attributes.Tenant,
-		},
-		Roles: roles,
-	}
+	return g
 }
 
-func mapToGetGroupByNameResponse(groups *getGroupsResponse) *ak.Group {
-	res := &ak.Group{}
-	for _, group := range groups.Results {
-		res = &ak.Group{
-			PK:   group.PK,
-			Name: group.Name,
-			GroupAttributes: ak.GroupAttributes{
-				Tenant: group.Attributes.Tenant,
-			},
-		}
-	}
-
-	return res
-}
-
-func mapToCreateOrUpdateUserResponse(user *getUserResponse) *ak.User {
-	var groups = []ak.Group{}
-
+func mapUser(user *api.User) *ak.User {
+	groups := make([]ak.Group, 0, len(user.GroupsObj))
 	for _, group := range user.GroupsObj {
 		groups = append(groups, ak.Group{
-			PK:   group.PK,
+			PK:   group.Pk,
 			Name: group.Name,
 		})
 	}
 
 	return &ak.User{
-		PK:          user.PK,
+		PK:          int(user.Pk),
 		Username:    user.Username,
 		Name:        user.Name,
-		Email:       user.Email,
-		Path:        user.Path,
-		IsActive:    user.IsActive,
+		Email:       user.GetEmail(),
+		Path:        user.GetPath(),
+		IsActive:    user.GetIsActive(),
 		IsSuperuser: user.IsSuperuser,
 		Attributes: ak.UserAttributes{
-			UserType: user.Attributes.UserType,
-			Tenant:   user.Attributes.Tenant,
+			UserType: stringAttr(user.Attributes, attrUserType),
+			Tenant:   stringAttr(user.Attributes, attrTenant),
 		},
 		Groups: groups,
 	}
 }
 
-func mapToUsersGetResponse(users *getUsersResponse) *ak.User {
-	var userGetResponse ak.User
-	var groups = []ak.Group{}
-
-	for _, result := range users.Results {
-		for _, group := range result.GroupsObj {
-			groups = append(groups, ak.Group{
-				PK:   group.PK,
-				Name: group.Name,
-			})
-		}
-	}
-
-	for _, userResults := range users.Results {
-		userGetResponse.PK = userResults.PK
-		userGetResponse.Username = userResults.Username
-		userGetResponse.Name = userResults.Name
-		userGetResponse.Email = userResults.Email
-		userGetResponse.Path = userResults.Path
-		userGetResponse.IsActive = userResults.IsActive
-		userGetResponse.IsSuperuser = userResults.IsSuperuser
-		userGetResponse.Attributes.UserType = userResults.Attributes.UserType
-		userGetResponse.Attributes.Tenant = userResults.Attributes.Tenant
-		userGetResponse.Groups = groups
-	}
-
-	return &userGetResponse
-}
-
-func mapToGetOidcProviderResponse(provider *getOidcProviderResponse) *ak.OidcProvider {
+func mapOidcProvider(provider *api.OAuth2Provider) *ak.OidcProvider {
 	var redirectUris []ak.OidcRedirectUri
-
-	for _, redirectUri := range provider.RedirectUris {
+	for _, uri := range provider.RedirectUris {
 		redirectUris = append(redirectUris, ak.OidcRedirectUri{
-			MatchingMode: redirectUri.MatchingMode,
-			Url:          redirectUri.Url,
+			MatchingMode: string(uri.MatchingMode),
+			Url:          uri.Url,
 		})
 	}
 
-	providerResp := ak.OidcProvider{
+	return &ak.OidcProvider{
 		Provider: ak.Provider{
-			PK:                 provider.PK,
+			PK:                 int(provider.Pk),
 			Name:               provider.Name,
-			AuthenticationFlow: provider.AuthenticationFlow,
+			AuthenticationFlow: provider.GetAuthenticationFlow(),
 			AuthorizationFlow:  provider.AuthorizationFlow,
-			InvalidationFlow:   provider.IssuerMode,
+			InvalidationFlow:   provider.InvalidationFlow,
 		},
-		PropertyMappings: provider.PropertyMappings,
-		ClientType:       provider.ClientType,
-		ClientId:         provider.ClientId,
-		ClientSecret:     provider.ClientSecret,
-		SigningKey:       provider.SigningKey,
-		EncryptionKey:    provider.EncryptionKey,
-		RedirectUris:     redirectUris,
-		SubMode:          provider.SubMode,
-		IssuerMode:       provider.IssuerMode,
+		PropertyMappings:     provider.PropertyMappings,
+		ClientType:           string(provider.GetClientType()),
+		ClientId:             provider.GetClientId(),
+		ClientSecret:         provider.GetClientSecret(),
+		AccessCodeValidity:   provider.GetAccessCodeValidity(),
+		AccessTokenValidity:  provider.GetAccessTokenValidity(),
+		RefreshTokenValidity: provider.GetRefreshTokenValidity(),
+		SigningKey:           provider.GetSigningKey(),
+		EncryptionKey:        provider.GetEncryptionKey(),
+		RedirectUris:         redirectUris,
+		SubMode:              string(provider.GetSubMode()),
+		IssuerMode:           string(provider.GetIssuerMode()),
 	}
-
-	return &providerResp
 }
 
-func mapToCreateOrUpdateApplicationResponse(application *getApplicationResponse) *ak.Application {
-	applicationResp := ak.Application{
-		PK:           application.PK,
-		Name:         application.Name,
-		Slug:         application.Slug,
-		ProviderPK:   application.ProviderObj.PK,
-		ProviderName: application.ProviderObj.Name,
-	}
+func mapApplication(app *api.Application) *ak.Application {
+	// provider_obj is null for applications without a provider; GetProviderObj
+	// then returns the zero Provider.
+	provider := app.GetProviderObj()
 
-	return &applicationResp
+	return &ak.Application{
+		PK:           app.Pk,
+		Name:         app.Name,
+		Slug:         app.Slug,
+		ProviderPK:   int(provider.Pk),
+		ProviderName: provider.Name,
+		ProviderType: providerType(provider.MetaModelName),
+	}
 }
 
-func mapToGetFlowsResponse(flows *getFlowsResponse) []ak.Flow {
-	var flowsResp []ak.Flow
-
-	for _, f := range flows.Results {
-		flowsResp = append(flowsResp, ak.Flow{
-			PK:          f.PK,
-			Name:        f.Name,
-			Slug:        f.Slug,
-			Designation: f.Designation,
-		})
+func providerType(metaModelName string) string {
+	switch metaModelName {
+	case ProviderTypeMetaModelLDAP:
+		return constants.ProviderTypeLDAP
+	case ProviderTypeMetaModelOIDC:
+		return constants.ProviderTypeOIDC
+	case ProviderTypeMetaModelProxy:
+		return constants.ProviderTypeProxy
+	case ProviderTypeMetaModelRAC:
+		return constants.ProviderTypeRAC
+	case ProviderTypeMetaModelSAML:
+		return constants.ProviderTypeSAML
+	case ProviderTypeMetaModelSCIM:
+		return constants.ProviderTypeSCIM
+	default:
+		return ""
 	}
-
-	return flowsResp
 }
 
-func mapToGetApplicationsByNameResponse(apps *getApplicationsResponse, name string) (a *ak.Application, err error) {
-	var applicationsResp ak.Application
-
-	var found bool
-	for _, app := range apps.Results {
-		if app.Name != name {
-			continue
-		}
-		found = true
-
-		switch app.ProviderObj.MetaModelName {
-		case ProviderTypeMetaModelLDAP:
-			applicationsResp.ProviderType = constants.ProviderTypeLDAP
-		case ProviderTypeMetaModelOIDC:
-			applicationsResp.ProviderType = constants.ProviderTypeOIDC
-		case ProviderTypeMetaModelProxy:
-			applicationsResp.ProviderType = constants.ProviderTypeProxy
-		case ProviderTypeMetaModelRAC:
-			applicationsResp.ProviderType = constants.ProviderTypeRAC
-		case ProviderTypeMetaModelSAML:
-			applicationsResp.ProviderType = constants.ProviderTypeSAML
-		case ProviderTypeMetaModelSCIM:
-			applicationsResp.ProviderType = constants.ProviderTypeSCIM
-		}
-
-		applicationsResp.PK = app.PK
-		applicationsResp.Name = app.Name
-		applicationsResp.Slug = app.Slug
-		applicationsResp.ProviderPK = app.ProviderObj.PK
-		applicationsResp.ProviderName = app.ProviderObj.Name
+func mapFlow(flow *api.Flow) ak.Flow {
+	return ak.Flow{
+		PK:          flow.Pk,
+		Name:        flow.Name,
+		Slug:        flow.Slug,
+		Designation: string(flow.Designation),
 	}
-
-	if !found {
-		return nil, fmt.Errorf("application not found")
-	}
-
-	return &applicationsResp, nil
 }

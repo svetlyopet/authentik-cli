@@ -31,3 +31,16 @@ const (
 	OidcAccessTokenValidityDefault  = "minutes=30"
 	OidcRefreshTokenValidityDefault = "hours=24"
 )
+
+const (
+	OidcConsentTypeExplicit = "explicit"
+	OidcConsentTypeImplicit = "implicit"
+)
+
+// Slugs of the flows created by authentik's default blueprints.
+const (
+	FlowSlugAuthentication               = "default-authentication-flow"
+	FlowSlugAuthorizationExplicitConsent = "default-provider-authorization-explicit-consent"
+	FlowSlugAuthorizationImplicitConsent = "default-provider-authorization-implicit-consent"
+	FlowSlugInvalidation                 = "default-invalidation-flow"
+)

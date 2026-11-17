@@ -30,7 +30,7 @@ go.work.sum
 # Integration tests mounted directories
 ci/integration_tests/certs
 ci/integration_tests/custom-templates
-ci/integration_tests/media
+ci/integration_tests/data
 
 # Output directories
 out/
