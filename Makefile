@@ -65,13 +65,13 @@ release: dist ## Build release binaries
 	done
 
 lint: fmt download ## Lints all code with golangci-lint
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run
+	@go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint run
 
 lint-reports: $(OUT_DIR)/lint.xml
 
 .PHONY: $(OUT_DIR)/lint.xml
 $(OUT_DIR)/lint.xml: out download
-	@go run github.com/golangci/golangci-lint/cmd/golangci-lint run ./... --out-format checkstyle | tee "$(@)"
+	@go run github.com/golangci/golangci-lint/v2/cmd/golangci-lint run ./... --output.checkstyle.path=stdout | tee "$(@)"
 
 govulncheck: ## Vulnerability detection using govulncheck
 	@go run golang.org/x/vuln/cmd/govulncheck ./...

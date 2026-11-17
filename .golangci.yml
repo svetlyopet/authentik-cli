@@ -1,0 +1,12 @@
+# golangci-lint v2 configuration.
+# Keeps the default linters and the exclusions v1 applied implicitly.
+version: "2"
+
+linters:
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling

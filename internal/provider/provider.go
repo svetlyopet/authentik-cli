@@ -2,6 +2,7 @@ package provider
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
@@ -30,28 +31,29 @@ func CreateOidcProvider(name, oidcClientType, oidcConsentType string, oidcEncryp
 	redirectUris = append(redirectUris, redirectUrisStrict...)
 	redirectUris = append(redirectUris, redirectUrisRegex...)
 
-	var authenticationFlow string
-	var authorizationFlow string
-	var invalidationFlow string
-
-	flows, err := flow.GetFlows()
-	if err != nil {
-		return nil, err
+	var authorizationFlowSlug string
+	switch oidcConsentType {
+	case OidcConsentTypeExplicit:
+		authorizationFlowSlug = FlowSlugAuthorizationExplicitConsent
+	case OidcConsentTypeImplicit:
+		authorizationFlowSlug = FlowSlugAuthorizationImplicitConsent
+	default:
+		return nil, fmt.Errorf("invalid OIDC consent type %q: must be %q or %q",
+			oidcConsentType, OidcConsentTypeExplicit, OidcConsentTypeImplicit)
 	}
 
 	// TODO: add options for choosing the flows instead of always using the defaults
-	for _, f := range flows {
-		if f.Designation == "authorization" {
-			if oidcConsentType == "explicit" && f.Slug == "default-provider-authorization-explicit-consent" {
-				authorizationFlow = f.PK
-			} else if oidcConsentType == "implicit" && f.Slug == "default-provider-authorization-implicit-consent" {
-				authorizationFlow = f.PK
-			}
-		} else if f.Designation == "authentication" && f.Slug == "default-authentication-flow" {
-			authenticationFlow = f.PK
-		} else if f.Designation == "invalidation" && f.Slug == "default-invalidation-flow" {
-			invalidationFlow = f.PK
-		}
+	authenticationFlow, err := flowPK(FlowSlugAuthentication, "authentication", false)
+	if err != nil {
+		return nil, err
+	}
+	authorizationFlow, err := flowPK(authorizationFlowSlug, "authorization", true)
+	if err != nil {
+		return nil, err
+	}
+	invalidationFlow, err := flowPK(FlowSlugInvalidation, "invalidation", true)
+	if err != nil {
+		return nil, err
 	}
 
 	// TODO: add support for signing and encryption of tokens, and property mappings
@@ -107,4 +109,31 @@ func GetOidcProvider(pk int) (provider *ak.OidcProvider, err error) {
 	}
 
 	return provider, nil
+}
+
+// flowPK looks up the flow with the given slug and returns its primary key.
+// A missing optional flow yields an empty key; a missing required flow, or a
+// flow with an unexpected designation, is an error.
+func flowPK(slug, designation string, required bool) (string, error) {
+	f, err := flow.GetFlowBySlug(slug)
+	if err != nil {
+		var notExistsError *customErrors.NotExists
+		if errors.As(err, &notExistsError) {
+			if !required {
+				return "", nil
+			}
+			return "", customErrors.NewNotExists(fmt.Sprintf(
+				"required flow %q not found in authentik (make sure the default blueprints have been applied)", slug))
+		}
+		return "", err
+	}
+
+	if f.Designation != designation {
+		return "", fmt.Errorf("flow %q has designation %q, expected %q", slug, f.Designation, designation)
+	}
+	if f.PK == "" {
+		return "", fmt.Errorf("flow %q was returned without a primary key", slug)
+	}
+
+	return f.PK, nil
 }

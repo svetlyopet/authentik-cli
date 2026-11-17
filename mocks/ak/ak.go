@@ -242,19 +242,19 @@ func (mr *MockAuthentikRepositoryMockRecorder) GetAuthentikTargetUrl() *gomock.C
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAuthentikTargetUrl", reflect.TypeOf((*MockAuthentikRepository)(nil).GetAuthentikTargetUrl))
 }
 
-// GetFlows mocks base method.
-func (m *MockAuthentikRepository) GetFlows() ([]ak.Flow, error) {
+// GetFlowBySlug mocks base method.
+func (m *MockAuthentikRepository) GetFlowBySlug(slug string) (*ak.Flow, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFlows")
-	ret0, _ := ret[0].([]ak.Flow)
+	ret := m.ctrl.Call(m, "GetFlowBySlug", slug)
+	ret0, _ := ret[0].(*ak.Flow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetFlows indicates an expected call of GetFlows.
-func (mr *MockAuthentikRepositoryMockRecorder) GetFlows() *gomock.Call {
+// GetFlowBySlug indicates an expected call of GetFlowBySlug.
+func (mr *MockAuthentikRepositoryMockRecorder) GetFlowBySlug(slug any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlows", reflect.TypeOf((*MockAuthentikRepository)(nil).GetFlows))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlowBySlug", reflect.TypeOf((*MockAuthentikRepository)(nil).GetFlowBySlug), slug)
 }
 
 // GetGroup mocks base method.
@@ -652,19 +652,19 @@ func (mr *MockAuthentikProviderMockRecorder) GetApplicationByName(name any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetApplicationByName", reflect.TypeOf((*MockAuthentikProvider)(nil).GetApplicationByName), name)
 }
 
-// GetFlows mocks base method.
-func (m *MockAuthentikProvider) GetFlows() ([]ak.Flow, error) {
+// GetFlowBySlug mocks base method.
+func (m *MockAuthentikProvider) GetFlowBySlug(slug string) (*ak.Flow, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetFlows")
-	ret0, _ := ret[0].([]ak.Flow)
+	ret := m.ctrl.Call(m, "GetFlowBySlug", slug)
+	ret0, _ := ret[0].(*ak.Flow)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetFlows indicates an expected call of GetFlows.
-func (mr *MockAuthentikProviderMockRecorder) GetFlows() *gomock.Call {
+// GetFlowBySlug indicates an expected call of GetFlowBySlug.
+func (mr *MockAuthentikProviderMockRecorder) GetFlowBySlug(slug any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlows", reflect.TypeOf((*MockAuthentikProvider)(nil).GetFlows))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetFlowBySlug", reflect.TypeOf((*MockAuthentikProvider)(nil).GetFlowBySlug), slug)
 }
 
 // GetOidcProvider mocks base method.

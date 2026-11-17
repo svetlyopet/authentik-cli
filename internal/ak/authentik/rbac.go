@@ -1,132 +1,97 @@
 package authentik
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io"
-	"net/http"
-	"net/url"
+	"context"
+
+	api "goauthentik.io/api/v3"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 )
 
-const (
-	rbacRolePath                  = "%s/api/v3/rbac/roles/"
-	rbacRolePathUpdateDelete      = "%s/api/v3/rbac/roles/%s/"
-	rbacRolePermissionsAssignPath = "%s/api/v3/rbac/permissions/assigned_by_roles/%s/assign/"
-)
+// tenantRoleViewPermissions are granted to every tenant role so its members
+// can browse the admin interface.
+var tenantRoleViewPermissions = []string{
+	AccessAdminInterfacePerm,
+	ViewSystemInfoPerm,
+	ViewBrandPerm,
+	ViewFlowPerm,
+	ViewOutpostPerm,
+	ViewApplicationPerm,
+	ViewProviderPerm,
+	ViewEventPerm,
+}
 
 func (a *authentik) CreateRole(name string) (*ak.Role, error) {
-	createRoleRequest := createRoleRequest{
-		Name: name,
-	}
-
-	createRoleRequestBytes, err := json.Marshal(createRoleRequest)
-	if err != nil {
+	if err := a.preflightCheck(); err != nil {
 		return nil, err
 	}
 
-	response, err := a.doRequest(http.MethodPost,
-		fmt.Sprintf(rbacRolePath, a.url),
-		bytes.NewBuffer(createRoleRequestBytes))
+	role, resp, err := a.client.RbacAPI.RbacRolesCreate(context.Background()).
+		RoleRequest(*api.NewRoleRequest(name)).
+		Execute()
 	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close() //nolint
-
-	if response.StatusCode != http.StatusCreated {
-		errBody, _ := io.ReadAll(response.Body)
-		return nil, customErrors.NewUnexpectedResult(fmt.Sprintf("create role: %s", string(errBody)))
+		return nil, apiError("create role", resp, err)
 	}
 
-	var createRoleResp getRoleResponse
-	err = json.NewDecoder(response.Body).Decode(&createRoleResp)
-	if err != nil {
-		return nil, err
-	}
-
-	return mapToCreateOrUpdateRoleResponse(&createRoleResp), nil
+	return mapRole(role), nil
 }
 
 func (a *authentik) GetRoleByName(name string) (*ak.Role, error) {
-	param := url.Values{}
-	param.Add("search", name)
-
-	response, err := a.doRequestWithQuery(http.MethodGet, fmt.Sprintf(rbacRolePath, a.url), nil, &param)
-	if err != nil {
-		return nil, err
-	}
-	defer response.Body.Close() //nolint
-
-	if response.StatusCode != http.StatusOK {
-		errBody, _ := io.ReadAll(response.Body)
-		return nil, fmt.Errorf("get role by name: %s", string(errBody))
-	}
-
-	var getRolesResp getRolesResponse
-	err = json.NewDecoder(response.Body).Decode(&getRolesResp)
-	if err != nil {
+	const op = "get role by name"
+	if err := a.preflightCheck(); err != nil {
 		return nil, err
 	}
 
-	if len(getRolesResp.Results) == 0 {
-		return nil, customErrors.NewNotExists("get role by name: role not found")
+	// The roles endpoint only offers a fuzzy search, so narrow the results
+	// down to exact name matches.
+	roles, resp, err := a.client.RbacAPI.RbacRolesList(context.Background()).
+		Search(name).
+		Execute()
+	if err != nil {
+		return nil, apiError(op, resp, err)
 	}
 
-	if len(getRolesResp.Results) > 1 {
-		return nil, customErrors.NewUnexpectedResult("get role by name: found more than one role with the search query")
+	var matches []api.Role
+	for _, role := range roles.Results {
+		if role.Name == name {
+			matches = append(matches, role)
+		}
 	}
 
-	return mapToGetRoleByNameResponse(&getRolesResp), nil
+	switch len(matches) {
+	case 0:
+		return nil, customErrors.NewNotExists(op + ": role not found")
+	case 1:
+		return mapRole(&matches[0]), nil
+	default:
+		return nil, customErrors.NewUnexpectedResult(op + ": found more than one role with the search query")
+	}
 }
 
 func (a *authentik) AssignViewPermissionsToTenantRole(rolePK string) error {
-	assignPermissionsReq := assignPermissionsRequest{
-		Permissions: []string{
-			AccessAdminInterfacePerm,
-			ViewSystemInfoPerm,
-			ViewBrandPerm,
-			ViewFlowPerm,
-			ViewOutpostPerm,
-			ViewApplicationPerm,
-			ViewProviderPerm,
-			ViewEventPerm,
-		},
-	}
-
-	assignPermissionsRequestBytes, err := json.Marshal(assignPermissionsReq)
-	if err != nil {
+	if err := a.preflightCheck(); err != nil {
 		return err
 	}
 
-	response, err := a.doRequest(http.MethodPost,
-		fmt.Sprintf(rbacRolePermissionsAssignPath, a.url, rolePK),
-		bytes.NewBuffer(assignPermissionsRequestBytes))
+	_, resp, err := a.client.RbacAPI.RbacPermissionsAssignedByRolesAssign(context.Background(), rolePK).
+		PermissionAssignRequest(*api.NewPermissionAssignRequest(tenantRoleViewPermissions)).
+		Execute()
 	if err != nil {
-		return err
-	}
-	defer response.Body.Close() //nolint
-
-	if response.StatusCode != http.StatusOK {
-		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("assign permissions to role: %s", string(errBody)))
+		return apiError("assign permissions to role", resp, err)
 	}
 
 	return nil
 }
 
 func (a *authentik) DeleteRole(uuid string) error {
-	response, err := a.doRequest(http.MethodDelete, fmt.Sprintf(rbacRolePathUpdateDelete, a.url, uuid), nil)
-	if err != nil {
+	if err := a.preflightCheck(); err != nil {
 		return err
 	}
-	defer response.Body.Close() //nolint
 
-	if response.StatusCode != http.StatusNoContent {
-		errBody, _ := io.ReadAll(response.Body)
-		return customErrors.NewUnexpectedResult(fmt.Sprintf("delete role: %s", string(errBody)))
+	resp, err := a.client.RbacAPI.RbacRolesDestroy(context.Background(), uuid).Execute()
+	if err != nil {
+		return apiError("delete role", resp, err)
 	}
 
 	return nil
