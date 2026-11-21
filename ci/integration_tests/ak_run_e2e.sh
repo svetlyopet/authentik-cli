@@ -29,6 +29,7 @@ AK_CLI_BIN="$AK_CLI_PATH/ak"
 TEST_TENANT_NAME="example-tenant"
 TEST_USER_NAME="example-user"
 TEST_GROUP_NAME="example-group"
+TEST_GROUP_RENAMED="example-group-renamed"
 TEST_OIDC_APP_NAME="example-app-oidc"
 
 source $CI_ENV_FILE
@@ -80,10 +81,31 @@ create_group() {
   test_result "$test_name" $?
 }
 
+update_group() {
+  local test_name="Update group"
+  test_start "$test_name"
+  $AK_CLI_BIN update group $TEST_GROUP_NAME --name=$TEST_GROUP_RENAMED
+  test_result "$test_name" $?
+}
+
 delete_group() {
   local test_name="Delete group"
   test_start "$test_name"
-  $AK_CLI_BIN delete group $TEST_GROUP_NAME
+  $AK_CLI_BIN delete group $TEST_GROUP_RENAMED
+  test_result "$test_name" $?
+}
+
+update_user() {
+  local test_name="Update user"
+  test_start "$test_name"
+  $AK_CLI_BIN update user $TEST_USER_NAME \
+  --email=$TEST_USER_NAME-updated@example.com \
+  --active=false
+  test_result "$test_name" $?
+
+  test_name="Update user keeps unchanged attributes"
+  test_start "$test_name"
+  $AK_CLI_BIN get user $TEST_USER_NAME | grep -q "\"name\": \"$TEST_USER_NAME\""
   test_result "$test_name" $?
 }
 
@@ -109,6 +131,20 @@ create_app_oidc() {
   --oidc-client-type=confidential \
   --oidc-redirect-uri-strict=http://localhost:8000 \
   --oidc-redirect-uri-regex='http://*.local:9000'
+  test_result "$test_name" $?
+}
+
+update_app_oidc() {
+  local test_name="Update OIDC app"
+  test_start "$test_name"
+  $AK_CLI_BIN update app $TEST_OIDC_APP_NAME \
+  --oidc-client-type=public \
+  --oidc-redirect-uri-strict=http://localhost:8080
+  test_result "$test_name" $?
+
+  test_name="Update OIDC app keeps unchanged redirect URIs"
+  test_start "$test_name"
+  $AK_CLI_BIN get app $TEST_OIDC_APP_NAME | grep -q 'local:9000'
   test_result "$test_name" $?
 }
 
@@ -204,11 +240,14 @@ main() {
   create_config
   create_tenant
   create_admin_user_for_tenant
+  update_user
   delete_user
   delete_tenant
   create_group
+  update_group
   delete_group
   create_app_oidc
+  update_app_oidc
   delete_app
 }
 

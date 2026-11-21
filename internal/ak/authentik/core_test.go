@@ -447,3 +447,124 @@ func Test_GetApplicationByName_WithoutProvider(t *testing.T) {
 		t.Errorf("GetApplicationByName() got = %+v, want %+v", got, want)
 	}
 }
+
+// assertBody fails the test unless the JSON request body equals want exactly,
+// which proves that a partial update sends no field it was not asked to.
+func assertBody(t *testing.T, r *http.Request, want map[string]any) {
+	t.Helper()
+
+	if got := decodeBody(t, r); !reflect.DeepEqual(got, want) {
+		t.Errorf("request body = %v, want exactly %v", got, want)
+	}
+}
+
+func Test_UpdateUser(t *testing.T) {
+	tests := []struct {
+		name     string
+		patch    ak.UserPatch
+		wantBody map[string]any
+	}{
+		{
+			name:     "single field",
+			patch:    ak.UserPatch{Email: new("new@example.com")},
+			wantBody: map[string]any{"email": "new@example.com"},
+		},
+		{
+			name:     "deactivate",
+			patch:    ak.UserPatch{IsActive: new(false)},
+			wantBody: map[string]any{"is_active": false},
+		},
+		{
+			name:  "several fields",
+			patch: ak.UserPatch{Username: new("janedoe"), Name: new("Jane Doe")},
+			wantBody: map[string]any{
+				"username": "janedoe",
+				"name":     "Jane Doe",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := newFakeAuthentik(t, map[string]route{
+				"PATCH /api/v3/core/users/7/": func(t *testing.T, r *http.Request) (int, any) {
+					assertBody(t, r, tt.wantBody)
+					return http.StatusOK, userFixture(7, "johndoe", "John Doe", nil)
+				},
+			})
+
+			got, err := r.UpdateUser(7, tt.patch)
+			if err != nil {
+				t.Fatalf("UpdateUser() error = %v", err)
+			}
+			if got.PK != 7 {
+				t.Errorf("UpdateUser() PK = %d, want 7", got.PK)
+			}
+		})
+	}
+
+	t.Run("not found", func(t *testing.T) {
+		r := newFakeAuthentik(t, map[string]route{
+			"PATCH /api/v3/core/users/7/": respond(http.StatusNotFound, errorBody("not found")),
+		})
+
+		_, err := r.UpdateUser(7, ak.UserPatch{Name: new("x")})
+		assertNotExists(t, err)
+	})
+
+	t.Run("validation error", func(t *testing.T) {
+		r := newFakeAuthentik(t, map[string]route{
+			"PATCH /api/v3/core/users/7/": respond(http.StatusBadRequest, map[string][]string{
+				"email": {"Enter a valid email address."},
+			}),
+		})
+
+		if _, err := r.UpdateUser(7, ak.UserPatch{Email: new("nope")}); err == nil {
+			t.Error("UpdateUser() error = nil, want error")
+		}
+	})
+}
+
+func Test_UpdateGroup(t *testing.T) {
+	r := newFakeAuthentik(t, map[string]route{
+		"PATCH /api/v3/core/groups/group-uuid/": func(t *testing.T, r *http.Request) (int, any) {
+			assertBody(t, r, map[string]any{"name": "renamed-group"})
+			return http.StatusOK, groupFixture("group-uuid", "renamed-group", nil)
+		},
+	})
+
+	got, err := r.UpdateGroup("group-uuid", ak.GroupPatch{Name: new("renamed-group")})
+	if err != nil {
+		t.Fatalf("UpdateGroup() error = %v", err)
+	}
+	want := &ak.Group{PK: "group-uuid", Name: "renamed-group"}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("UpdateGroup() got = %+v, want %+v", got, want)
+	}
+}
+
+func Test_UpdateApplication(t *testing.T) {
+	r := newFakeAuthentik(t, map[string]route{
+		"PATCH /api/v3/core/applications/example-app/": func(t *testing.T, r *http.Request) (int, any) {
+			assertBody(t, r, map[string]any{"slug": "new-slug"})
+			return http.StatusOK, applicationFixture("app-uuid", "example-app", "new-slug",
+				providerFixture(3, "example-app", ProviderTypeMetaModelOIDC))
+		},
+	})
+
+	got, err := r.UpdateApplication("example-app", ak.ApplicationPatch{Slug: new("new-slug")})
+	if err != nil {
+		t.Fatalf("UpdateApplication() error = %v", err)
+	}
+	want := &ak.Application{
+		PK:           "app-uuid",
+		Name:         "example-app",
+		Slug:         "new-slug",
+		ProviderPK:   3,
+		ProviderName: "example-app",
+		ProviderType: "oidc",
+	}
+	if !reflect.DeepEqual(got, want) {
+		t.Errorf("UpdateApplication() got = %+v, want %+v", got, want)
+	}
+}

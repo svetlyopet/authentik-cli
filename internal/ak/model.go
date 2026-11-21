@@ -77,3 +77,55 @@ type Flow struct {
 	Slug        string
 	Designation string
 }
+
+// UserPatch lists the user fields to change in a partial update. A nil field
+// is not sent, so authentik keeps its current value.
+type UserPatch struct {
+	Username *string
+	Name     *string
+	Email    *string
+	IsActive *bool
+}
+
+// IsEmpty reports whether the patch changes nothing.
+func (p UserPatch) IsEmpty() bool {
+	return p.Username == nil && p.Name == nil && p.Email == nil && p.IsActive == nil
+}
+
+// GroupPatch lists the group fields to change in a partial update. A nil
+// field is not sent, so authentik keeps its current value.
+type GroupPatch struct {
+	Name *string
+}
+
+// IsEmpty reports whether the patch changes nothing.
+func (p GroupPatch) IsEmpty() bool {
+	return p.Name == nil
+}
+
+// ApplicationPatch lists the application fields to change in a partial
+// update. A nil field is not sent, so authentik keeps its current value.
+type ApplicationPatch struct {
+	Name *string
+	Slug *string
+}
+
+// IsEmpty reports whether the patch changes nothing.
+func (p ApplicationPatch) IsEmpty() bool {
+	return p.Name == nil && p.Slug == nil
+}
+
+// OidcProviderPatch lists the OIDC provider fields to change in a partial
+// update. A nil field is not sent, so authentik keeps its current value.
+type OidcProviderPatch struct {
+	Name              *string
+	ClientType        *string
+	AuthorizationFlow *string
+	// RedirectUris replaces the provider's whole list of redirect URIs.
+	RedirectUris *[]OidcRedirectUri
+}
+
+// IsEmpty reports whether the patch changes nothing.
+func (p OidcProviderPatch) IsEmpty() bool {
+	return p.Name == nil && p.ClientType == nil && p.AuthorizationFlow == nil && p.RedirectUris == nil
+}

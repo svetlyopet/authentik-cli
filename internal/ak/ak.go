@@ -19,6 +19,8 @@ type AuthentikCore interface {
 	GetGroupByName(name string) (*Group, error)
 	DeleteGroup(uuid string) error
 	AddUserToGroup(userPK int, uuid string) error
+	UpdateUser(userPK int, patch UserPatch) (*User, error)
+	UpdateGroup(uuid string, patch GroupPatch) (*Group, error)
 }
 
 type AuthentikRbac interface {
@@ -36,4 +38,6 @@ type AuthentikProvider interface {
 	DeleteApplication(slug string) error
 	DeleteProvider(pk int) error
 	GetOidcProvider(pk int) (*OidcProvider, error)
+	UpdateApplication(slug string, patch ApplicationPatch) (*Application, error)
+	UpdateOidcProvider(pk int, patch OidcProviderPatch) (*OidcProvider, error)
 }

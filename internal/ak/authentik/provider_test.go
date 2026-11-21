@@ -117,3 +117,72 @@ func Test_DeleteProvider(t *testing.T) {
 		assertNotExists(t, r.DeleteProvider(9))
 	})
 }
+
+func Test_UpdateOidcProvider(t *testing.T) {
+	tests := []struct {
+		name     string
+		patch    ak.OidcProviderPatch
+		wantBody map[string]any
+	}{
+		{
+			name:     "client type only",
+			patch:    ak.OidcProviderPatch{ClientType: new("public")},
+			wantBody: map[string]any{"client_type": "public"},
+		},
+		{
+			name: "replace redirect uris",
+			patch: ak.OidcProviderPatch{RedirectUris: &[]ak.OidcRedirectUri{
+				{MatchingMode: "strict", Url: "https://app.example.com/cb"},
+			}},
+			wantBody: map[string]any{
+				// The client fills in redirect_uri_type with the API default.
+				"redirect_uris": []any{map[string]any{
+					"matching_mode":     "strict",
+					"redirect_uri_type": "authorization",
+					"url":               "https://app.example.com/cb",
+				}},
+			},
+		},
+		{
+			name:     "clear redirect uris",
+			patch:    ak.OidcProviderPatch{RedirectUris: &[]ak.OidcRedirectUri{}},
+			wantBody: map[string]any{"redirect_uris": []any{}},
+		},
+		{
+			name:  "name and authorization flow",
+			patch: ak.OidcProviderPatch{Name: new("renamed"), AuthorizationFlow: new("implicit-pk")},
+			wantBody: map[string]any{
+				"name":               "renamed",
+				"authorization_flow": "implicit-pk",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := newFakeAuthentik(t, map[string]route{
+				"PATCH /api/v3/providers/oauth2/9/": func(t *testing.T, r *http.Request) (int, any) {
+					assertBody(t, r, tt.wantBody)
+					return http.StatusOK, oauth2ProviderFixture(9, "example-provider", nil)
+				},
+			})
+
+			got, err := r.UpdateOidcProvider(9, tt.patch)
+			if err != nil {
+				t.Fatalf("UpdateOidcProvider() error = %v", err)
+			}
+			if got.PK != 9 {
+				t.Errorf("UpdateOidcProvider() PK = %d, want 9", got.PK)
+			}
+		})
+	}
+
+	t.Run("not found", func(t *testing.T) {
+		r := newFakeAuthentik(t, map[string]route{
+			"PATCH /api/v3/providers/oauth2/9/": respond(http.StatusNotFound, errorBody("not found")),
+		})
+
+		_, err := r.UpdateOidcProvider(9, ak.OidcProviderPatch{Name: new("x")})
+		assertNotExists(t, err)
+	})
+}

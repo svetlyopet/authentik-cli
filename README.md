@@ -61,6 +61,27 @@ authentik-cli create app example-app \
   --oidc-redirect-uri-regex='http://*.local:9000'
 ```
 
+### Updating resources
+
+`update` applies a partial update: only the attributes passed as flags are
+changed, everything else keeps its current value.
+
+```bash
+authentik-cli update user example-user --email=jane.doe@example.com --active=false
+```
+```bash
+authentik-cli update group example-group --name=new-group-name
+```
+```bash
+authentik-cli update app example-app \
+  --oidc-client-type=public \
+  --oidc-redirect-uri-strict=https://app.example.com/callback
+```
+
+Each `--oidc-redirect-uri-*` flag replaces only the redirect URIs of its own
+matching mode; pass it with an empty value (`--oidc-redirect-uri-regex=`) to
+remove them.
+
 ---
 
 ## 📚 Command Overview
@@ -70,6 +91,7 @@ authentik-cli create app example-app \
 | `config`  |                                   | Set config                  |
 | `create`  | `tenant`, `user`, `group`, `app`  | Create resources            |
 | `get`     | `tenant`, `user`, `group`, `app`  | Get details for resources   |
+| `update`  | `user`, `group`, `app`            | Partially update resources  |
 | `delete`  | `tenant`, `user`, `group`, `app`  | Delete resources            |
 
 Run `authentik-cli [command] --help` to see all flags and options.

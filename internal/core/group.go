@@ -2,9 +2,11 @@ package core
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/svetlyopet/authentik-cli/internal/ak"
 	"github.com/svetlyopet/authentik-cli/internal/constants"
+	"github.com/svetlyopet/authentik-cli/internal/diff"
 	customErrors "github.com/svetlyopet/authentik-cli/internal/errors"
 	"github.com/svetlyopet/authentik-cli/internal/logger"
 )
@@ -70,6 +72,45 @@ func AddUserToGroup(userPK int, groupPK, groupName string) (err error) {
 	}
 
 	logger.LogObjectChange(constants.ObjectTypeGroup, constants.ActionChanged, groupName)
+
+	return nil
+}
+
+// GroupChanges lists the changes requested for a group. A nil field is left
+// unchanged.
+type GroupChanges struct {
+	Name *string
+}
+
+// UpdateGroup applies the requested changes to the group with the given name.
+// Fields that were not requested, or already hold the requested value, are
+// not sent to authentik and keep their current value.
+func UpdateGroup(name string, changes GroupChanges) error {
+	group, err := GetGroupByName(name)
+	if err != nil {
+		return err
+	}
+
+	patch := ak.GroupPatch{
+		Name: diff.Changed(group.Name, changes.Name),
+	}
+
+	// Tenants find their admin group by name, so renaming it would orphan the tenant.
+	if patch.Name != nil && group.GroupAttributes.Tenant != "" {
+		return fmt.Errorf("group %s is managed by tenant %s and cannot be renamed", name, group.GroupAttributes.Tenant)
+	}
+
+	if patch.IsEmpty() {
+		logger.LogObjectChange(constants.ObjectTypeGroup, constants.ActionUnchanged, name)
+		return nil
+	}
+
+	updated, err := ak.Repo.UpdateGroup(group.PK, patch)
+	if err != nil {
+		return err
+	}
+
+	logger.LogObjectChange(constants.ObjectTypeGroup, constants.ActionChanged, updated.Name)
 
 	return nil
 }

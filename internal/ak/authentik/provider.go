@@ -13,16 +13,11 @@ func (a *authentik) CreateOidcProvider(oidcProvider ak.OidcProvider) (*ak.OidcPr
 		return nil, err
 	}
 
-	redirectUris := make([]api.RedirectURIRequest, 0, len(oidcProvider.RedirectUris))
-	for _, uri := range oidcProvider.RedirectUris {
-		redirectUris = append(redirectUris, *api.NewRedirectURIRequest(api.MatchingModeEnum(uri.MatchingMode), uri.Url))
-	}
-
 	req := api.NewOAuth2ProviderRequest(
 		oidcProvider.Name,
 		oidcProvider.AuthorizationFlow,
 		oidcProvider.InvalidationFlow,
-		redirectUris,
+		redirectUrisToAPI(oidcProvider.RedirectUris),
 	)
 	if oidcProvider.AuthenticationFlow != "" {
 		req.SetAuthenticationFlow(oidcProvider.AuthenticationFlow)
@@ -101,4 +96,55 @@ func (a *authentik) GetOidcProvider(pk int) (*ak.OidcProvider, error) {
 	}
 
 	return mapOidcProvider(provider), nil
+}
+
+// UpdateOidcProvider applies a partial update to the OAuth2/OIDC provider with
+// the given primary key. Only the fields set in patch are sent; authentik
+// keeps every other field.
+func (a *authentik) UpdateOidcProvider(pk int, patch ak.OidcProviderPatch) (*ak.OidcProvider, error) {
+	const op = "update oidc provider"
+	if err := a.preflightCheck(); err != nil {
+		return nil, err
+	}
+
+	id, err := toInt32(op, pk)
+	if err != nil {
+		return nil, err
+	}
+
+	// Start from the zero value: the generated New* constructors fill in schema
+	// defaults (client type, sub mode, token validity, ...), which a PATCH
+	// would then write over the provider's current settings.
+	req := api.PatchedOAuth2ProviderRequest{}
+	if patch.Name != nil {
+		req.SetName(*patch.Name)
+	}
+	if patch.ClientType != nil {
+		req.SetClientType(api.ClientTypeEnum(*patch.ClientType))
+	}
+	if patch.AuthorizationFlow != nil {
+		req.SetAuthorizationFlow(*patch.AuthorizationFlow)
+	}
+	if patch.RedirectUris != nil {
+		req.SetRedirectUris(redirectUrisToAPI(*patch.RedirectUris))
+	}
+
+	provider, resp, err := a.client.ProvidersAPI.ProvidersOauth2PartialUpdate(context.Background(), id).
+		PatchedOAuth2ProviderRequest(req).
+		Execute()
+	if err != nil {
+		return nil, apiError(op, resp, err)
+	}
+
+	return mapOidcProvider(provider), nil
+}
+
+// redirectUrisToAPI converts redirect URIs to their API form. The result is
+// never nil, so an empty list is still sent and clears the provider's URIs.
+func redirectUrisToAPI(uris []ak.OidcRedirectUri) []api.RedirectURIRequest {
+	out := make([]api.RedirectURIRequest, 0, len(uris))
+	for _, uri := range uris {
+		out = append(out, *api.NewRedirectURIRequest(api.MatchingModeEnum(uri.MatchingMode), uri.Url))
+	}
+	return out
 }

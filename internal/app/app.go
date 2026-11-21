@@ -66,3 +66,49 @@ func Delete(name string) error {
 
 	return nil
 }
+
+// Changes lists the changes requested for an application and its provider.
+// A nil field is left unchanged.
+type Changes struct {
+	Name *string
+	Slug *string
+	Oidc provider.OidcChanges
+}
+
+// Update applies the requested changes to the application with the given
+// name and to its provider. Anything that was not requested keeps its current
+// value.
+func Update(name string, changes Changes) error {
+	application, err := core.GetApplication(name)
+	if err != nil {
+		return err
+	}
+
+	if !changes.Oidc.IsEmpty() && application.ProviderType != constants.ProviderTypeOIDC {
+		return fmt.Errorf("application %s has no OIDC provider, so OIDC settings cannot be changed", name)
+	}
+
+	if application.ProviderType == constants.ProviderTypeOIDC {
+		oidcChanges := changes.Oidc
+		// Providers are created with their application's name; keep the two
+		// in step when the application is renamed.
+		if changes.Name != nil && application.ProviderName == application.Name {
+			oidcChanges.Name = changes.Name
+		}
+
+		if !oidcChanges.IsEmpty() {
+			if err := provider.UpdateOidcProvider(application.ProviderPK, oidcChanges); err != nil {
+				return err
+			}
+		}
+	}
+
+	if changes.Name == nil && changes.Slug == nil {
+		return nil
+	}
+
+	return core.UpdateApplication(application, core.ApplicationChanges{
+		Name: changes.Name,
+		Slug: changes.Slug,
+	})
+}

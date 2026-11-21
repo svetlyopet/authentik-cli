@@ -230,3 +230,94 @@ func (a *authentik) DeleteApplication(slug string) error {
 
 	return nil
 }
+
+// UpdateUser applies a partial update to the user with the given primary key.
+// Only the fields set in patch are sent; authentik keeps every other field.
+func (a *authentik) UpdateUser(userPK int, patch ak.UserPatch) (*ak.User, error) {
+	const op = "update user"
+	if err := a.preflightCheck(); err != nil {
+		return nil, err
+	}
+
+	pk, err := toInt32(op, userPK)
+	if err != nil {
+		return nil, err
+	}
+
+	// Start from the zero value: the generated New* constructors fill in schema
+	// defaults, which a PATCH would then write over the user's current values.
+	req := api.PatchedUserRequest{}
+	if patch.Username != nil {
+		req.SetUsername(*patch.Username)
+	}
+	if patch.Name != nil {
+		req.SetName(*patch.Name)
+	}
+	if patch.Email != nil {
+		req.SetEmail(*patch.Email)
+	}
+	if patch.IsActive != nil {
+		req.SetIsActive(*patch.IsActive)
+	}
+
+	user, resp, err := a.client.CoreAPI.CoreUsersPartialUpdate(context.Background(), pk).
+		PatchedUserRequest(req).
+		Execute()
+	if err != nil {
+		return nil, apiError(op, resp, err)
+	}
+
+	return mapUser(user), nil
+}
+
+// UpdateGroup applies a partial update to the group with the given UUID.
+// Only the fields set in patch are sent; authentik keeps every other field.
+func (a *authentik) UpdateGroup(uuid string, patch ak.GroupPatch) (*ak.Group, error) {
+	const op = "update group"
+	if err := a.preflightCheck(); err != nil {
+		return nil, err
+	}
+
+	// Zero value on purpose, see UpdateUser.
+	req := api.PatchedGroupRequest{}
+	if patch.Name != nil {
+		req.SetName(*patch.Name)
+	}
+
+	group, resp, err := a.client.CoreAPI.CoreGroupsPartialUpdate(context.Background(), uuid).
+		PatchedGroupRequest(req).
+		Execute()
+	if err != nil {
+		return nil, apiError(op, resp, err)
+	}
+
+	return mapGroup(group), nil
+}
+
+// UpdateApplication applies a partial update to the application with the
+// given slug. Only the fields set in patch are sent; authentik keeps every
+// other field.
+func (a *authentik) UpdateApplication(slug string, patch ak.ApplicationPatch) (*ak.Application, error) {
+	const op = "update application"
+	if err := a.preflightCheck(); err != nil {
+		return nil, err
+	}
+
+	// Zero value on purpose, see UpdateUser.
+	req := api.PatchedApplicationRequest{}
+	if patch.Name != nil {
+		req.SetName(*patch.Name)
+	}
+	if patch.Slug != nil {
+		req.SetSlug(*patch.Slug)
+	}
+
+	app, resp, err := a.client.CoreAPI.CoreApplicationsPartialUpdate(context.Background(), slug).
+		PatchedApplicationRequest(req).
+		Execute()
+	if err != nil {
+		return nil, apiError(op, resp, err)
+	}
+
+	return mapApplication(app), nil
+}

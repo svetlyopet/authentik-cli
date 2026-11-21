@@ -177,3 +177,115 @@ func Test_CreateOidcProvider_InvalidConsentType(t *testing.T) {
 		t.Fatal("CreateOidcProvider() error = nil, want error")
 	}
 }
+
+func currentOidcProvider() *ak.OidcProvider {
+	return &ak.OidcProvider{
+		Provider: ak.Provider{
+			PK:                3,
+			Name:              "example-app",
+			AuthorizationFlow: "explicit-pk",
+		},
+		ClientType: OidcClientTypeConfidential,
+		RedirectUris: []ak.OidcRedirectUri{
+			{MatchingMode: OidcRedirectUriMatchingModeStrict, Url: "http://localhost:8000"},
+			{MatchingMode: OidcRedirectUriMatchingModeRegex, Url: "http://*.local:9000"},
+		},
+	}
+}
+
+func Test_UpdateOidcProvider(t *testing.T) {
+	tests := []struct {
+		name    string
+		changes OidcChanges
+		// wantPatch is the patch sent to authentik, or nil when no update
+		// call is expected.
+		wantPatch *ak.OidcProviderPatch
+	}{
+		{
+			name:      "client type only",
+			changes:   OidcChanges{ClientType: new(OidcClientTypePublic)},
+			wantPatch: &ak.OidcProviderPatch{ClientType: new(OidcClientTypePublic)},
+		},
+		{
+			name:      "consent type selects the authorization flow",
+			changes:   OidcChanges{ConsentType: new(OidcConsentTypeImplicit)},
+			wantPatch: &ak.OidcProviderPatch{AuthorizationFlow: new("implicit-pk")},
+		},
+		{
+			name:    "strict uris are replaced and regex uris kept",
+			changes: OidcChanges{RedirectUrisStrict: &[]string{"https://new.example.com/cb"}},
+			wantPatch: &ak.OidcProviderPatch{RedirectUris: &[]ak.OidcRedirectUri{
+				{MatchingMode: OidcRedirectUriMatchingModeStrict, Url: "https://new.example.com/cb"},
+				{MatchingMode: OidcRedirectUriMatchingModeRegex, Url: "http://*.local:9000"},
+			}},
+		},
+		{
+			name:    "regex uris are cleared and strict uris kept",
+			changes: OidcChanges{RedirectUrisRegex: &[]string{""}},
+			wantPatch: &ak.OidcProviderPatch{RedirectUris: &[]ak.OidcRedirectUri{
+				{MatchingMode: OidcRedirectUriMatchingModeStrict, Url: "http://localhost:8000"},
+			}},
+		},
+		{
+			name:      "all uris are cleared",
+			changes:   OidcChanges{RedirectUrisStrict: &[]string{}, RedirectUrisRegex: &[]string{}},
+			wantPatch: &ak.OidcProviderPatch{RedirectUris: &[]ak.OidcRedirectUri{}},
+		},
+		{
+			name: "nothing changes",
+			changes: OidcChanges{
+				Name:               new("example-app"),
+				ClientType:         new(OidcClientTypeConfidential),
+				ConsentType:        new(OidcConsentTypeExplicit),
+				RedirectUrisStrict: &[]string{"http://localhost:8000"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			repo := setRepo(t)
+			serveFlows(repo, defaultFlows)
+			repo.EXPECT().GetOidcProvider(3).Return(currentOidcProvider(), nil)
+			if tt.wantPatch != nil {
+				repo.EXPECT().UpdateOidcProvider(3, *tt.wantPatch).Return(currentOidcProvider(), nil)
+			}
+
+			if err := UpdateOidcProvider(3, tt.changes); err != nil {
+				t.Fatalf("UpdateOidcProvider() error = %v", err)
+			}
+		})
+	}
+}
+
+func Test_UpdateOidcProvider_InvalidInput(t *testing.T) {
+	tests := []struct {
+		name    string
+		changes OidcChanges
+	}{
+		{name: "client type", changes: OidcChanges{ClientType: new("sometimes")}},
+		{name: "consent type", changes: OidcChanges{ConsentType: new("sometimes")}},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			setRepo(t) // no calls expected: input is validated first
+
+			if err := UpdateOidcProvider(3, tt.changes); err == nil {
+				t.Fatal("UpdateOidcProvider() error = nil, want error")
+			}
+		})
+	}
+}
+
+func Test_UpdateOidcProvider_NotFound(t *testing.T) {
+	repo := setRepo(t)
+	repo.EXPECT().GetOidcProvider(3).Return(nil, customErrors.NewNotExists("get oidc provider: not found"))
+
+	err := UpdateOidcProvider(3, OidcChanges{ClientType: new(OidcClientTypePublic)})
+
+	var notExists *customErrors.NotExists
+	if !errors.As(err, &notExists) {
+		t.Fatalf("error = %v (%T), want *errors.NotExists", err, err)
+	}
+}

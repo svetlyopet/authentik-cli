@@ -332,6 +332,66 @@ func (mr *MockAuthentikRepositoryMockRecorder) GetUserByUsername(username any) *
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockAuthentikRepository)(nil).GetUserByUsername), username)
 }
 
+// UpdateApplication mocks base method.
+func (m *MockAuthentikRepository) UpdateApplication(slug string, patch ak.ApplicationPatch) (*ak.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateApplication", slug, patch)
+	ret0, _ := ret[0].(*ak.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateApplication indicates an expected call of UpdateApplication.
+func (mr *MockAuthentikRepositoryMockRecorder) UpdateApplication(slug, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateApplication", reflect.TypeOf((*MockAuthentikRepository)(nil).UpdateApplication), slug, patch)
+}
+
+// UpdateGroup mocks base method.
+func (m *MockAuthentikRepository) UpdateGroup(uuid string, patch ak.GroupPatch) (*ak.Group, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateGroup", uuid, patch)
+	ret0, _ := ret[0].(*ak.Group)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateGroup indicates an expected call of UpdateGroup.
+func (mr *MockAuthentikRepositoryMockRecorder) UpdateGroup(uuid, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateGroup", reflect.TypeOf((*MockAuthentikRepository)(nil).UpdateGroup), uuid, patch)
+}
+
+// UpdateOidcProvider mocks base method.
+func (m *MockAuthentikRepository) UpdateOidcProvider(pk int, patch ak.OidcProviderPatch) (*ak.OidcProvider, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOidcProvider", pk, patch)
+	ret0, _ := ret[0].(*ak.OidcProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateOidcProvider indicates an expected call of UpdateOidcProvider.
+func (mr *MockAuthentikRepositoryMockRecorder) UpdateOidcProvider(pk, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOidcProvider", reflect.TypeOf((*MockAuthentikRepository)(nil).UpdateOidcProvider), pk, patch)
+}
+
+// UpdateUser mocks base method.
+func (m *MockAuthentikRepository) UpdateUser(userPK int, patch ak.UserPatch) (*ak.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUser", userPK, patch)
+	ret0, _ := ret[0].(*ak.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockAuthentikRepositoryMockRecorder) UpdateUser(userPK, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockAuthentikRepository)(nil).UpdateUser), userPK, patch)
+}
+
 // MockAuthentikCore is a mock of AuthentikCore interface.
 type MockAuthentikCore struct {
 	ctrl     *gomock.Controller
@@ -471,6 +531,36 @@ func (m *MockAuthentikCore) GetUserByUsername(username string) (*ak.User, error)
 func (mr *MockAuthentikCoreMockRecorder) GetUserByUsername(username any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByUsername", reflect.TypeOf((*MockAuthentikCore)(nil).GetUserByUsername), username)
+}
+
+// UpdateGroup mocks base method.
+func (m *MockAuthentikCore) UpdateGroup(uuid string, patch ak.GroupPatch) (*ak.Group, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateGroup", uuid, patch)
+	ret0, _ := ret[0].(*ak.Group)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateGroup indicates an expected call of UpdateGroup.
+func (mr *MockAuthentikCoreMockRecorder) UpdateGroup(uuid, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateGroup", reflect.TypeOf((*MockAuthentikCore)(nil).UpdateGroup), uuid, patch)
+}
+
+// UpdateUser mocks base method.
+func (m *MockAuthentikCore) UpdateUser(userPK int, patch ak.UserPatch) (*ak.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateUser", userPK, patch)
+	ret0, _ := ret[0].(*ak.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateUser indicates an expected call of UpdateUser.
+func (mr *MockAuthentikCoreMockRecorder) UpdateUser(userPK, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateUser", reflect.TypeOf((*MockAuthentikCore)(nil).UpdateUser), userPK, patch)
 }
 
 // MockAuthentikRbac is a mock of AuthentikRbac interface.
@@ -680,4 +770,34 @@ func (m *MockAuthentikProvider) GetOidcProvider(pk int) (*ak.OidcProvider, error
 func (mr *MockAuthentikProviderMockRecorder) GetOidcProvider(pk any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetOidcProvider", reflect.TypeOf((*MockAuthentikProvider)(nil).GetOidcProvider), pk)
+}
+
+// UpdateApplication mocks base method.
+func (m *MockAuthentikProvider) UpdateApplication(slug string, patch ak.ApplicationPatch) (*ak.Application, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateApplication", slug, patch)
+	ret0, _ := ret[0].(*ak.Application)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateApplication indicates an expected call of UpdateApplication.
+func (mr *MockAuthentikProviderMockRecorder) UpdateApplication(slug, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateApplication", reflect.TypeOf((*MockAuthentikProvider)(nil).UpdateApplication), slug, patch)
+}
+
+// UpdateOidcProvider mocks base method.
+func (m *MockAuthentikProvider) UpdateOidcProvider(pk int, patch ak.OidcProviderPatch) (*ak.OidcProvider, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateOidcProvider", pk, patch)
+	ret0, _ := ret[0].(*ak.OidcProvider)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// UpdateOidcProvider indicates an expected call of UpdateOidcProvider.
+func (mr *MockAuthentikProviderMockRecorder) UpdateOidcProvider(pk, patch any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateOidcProvider", reflect.TypeOf((*MockAuthentikProvider)(nil).UpdateOidcProvider), pk, patch)
 }
